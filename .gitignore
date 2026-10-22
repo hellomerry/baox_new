@@ -1,0 +1,72 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.venv/
+venv/
+env/
+
+# 数据库
+*.db
+*.sqlite
+*.sqlite3
+reimbursement.db
+
+# 上传/备份/日志
+uploads/
+backup/
+logs/
+rbag_temp/
+backups/
+
+# PyInstaller
+dist/
+build/
+*.spec
+*.exe
+*.app
+
+# 证书（不提交私钥）
+certs/
+*.crt
+*.key
+*.pem
+
+# 测试数据
+tests/fixtures/
+tests/data/
+
+# 系统
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
+
+# 临时
+*.tmp
+*.bak
+*.log
+nul
+
+# PyInstaller 临时 + 产物
+build/
+dist/
+reimbursement_*.spec
+
+# 测试数据残留
+reimbursement.db
+*.db-shm
+*.db-wal
+.venv/
+venv/
+---
+dist_clients/

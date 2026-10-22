@@ -1,0 +1,2854 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>报销稽核系统 — 使用手册</title>
+<style>
+:root {
+  --primary: #2c3e50;
+  --accent: #4472C4;
+  --success: #27ae60;
+  --warning: #f39c12;
+  --danger: #e74c3c;
+  --info: #3498db;
+  --gray-1: #f8f9fa;
+  --gray-2: #ecf0f1;
+  --gray-3: #bdc3c7;
+  --gray-4: #7f8c8d;
+  --gray-5: #34495e;
+  --border: #d0d0d0;
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f5f7fa;
+  color: #2c3e50;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+/* ============= 顶部导航 ============= */
+.toc {
+  position: fixed;
+  top: 0; left: 0;
+  width: 280px;
+  height: 100vh;
+  background: var(--primary);
+  color: white;
+  overflow-y: auto;
+  padding: 24px 0;
+  z-index: 100;
+}
+.toc-header {
+  padding: 0 24px 16px;
+  border-bottom: 1px solid #455d75;
+  margin-bottom: 16px;
+}
+.toc-header h1 {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+.toc-header p {
+  font-size: 12px;
+  color: #95a5a6;
+}
+.toc ul {
+  list-style: none;
+  padding: 0 12px;
+}
+.toc li a {
+  display: block;
+  padding: 8px 12px;
+  color: #bdc3c7;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+.toc li a:hover {
+  background: #34495e;
+  color: white;
+}
+.toc li.chapter a {
+  font-weight: 600;
+  color: #ecf0f1;
+  margin-top: 12px;
+}
+
+/* ============= 主内容 ============= */
+.main {
+  margin-left: 280px;
+  max-width: 1200px;
+  padding: 40px 60px 80px;
+}
+
+h1.chapter-title {
+  font-size: 28px;
+  color: var(--primary);
+  padding: 16px 0 8px;
+  margin: 32px 0 16px;
+  border-bottom: 3px solid var(--accent);
+}
+h1.chapter-title:first-child {
+  margin-top: 0;
+}
+h2 {
+  font-size: 20px;
+  color: var(--primary);
+  margin: 28px 0 12px;
+  padding-left: 12px;
+  border-left: 4px solid var(--accent);
+}
+h3 {
+  font-size: 16px;
+  color: var(--gray-5);
+  margin: 20px 0 10px;
+}
+h4 {
+  font-size: 14px;
+  color: var(--gray-5);
+  margin: 16px 0 8px;
+  font-weight: 600;
+}
+p {
+  margin: 8px 0;
+  color: #555;
+}
+ul, ol {
+  margin: 8px 0 8px 24px;
+  color: #555;
+}
+li {
+  margin: 4px 0;
+}
+code {
+  background: #f0f0f0;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-family: "SF Mono", Consolas, monospace;
+  font-size: 12px;
+  color: #c0392b;
+}
+pre {
+  background: #2c3e50;
+  color: #ecf0f1;
+  padding: 12px 16px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 8px 0;
+}
+blockquote {
+  background: #fff3cd;
+  border-left: 4px solid var(--warning);
+  padding: 8px 12px;
+  margin: 8px 0;
+  border-radius: 4px;
+  color: #856404;
+  font-size: 13px;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 12px 0;
+  background: white;
+  box-shadow: var(--shadow);
+  border-radius: 6px;
+  overflow: hidden;
+}
+th, td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--gray-2);
+}
+th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: var(--primary);
+  font-size: 13px;
+}
+tr:last-child td {
+  border-bottom: none;
+}
+tr:hover td {
+  background: #f8f9fa;
+}
+
+/* ============= 真实界面仿真 ============= */
+.mockup {
+  margin: 20px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  background: white;
+}
+.mockup-title {
+  background: var(--primary);
+  color: white;
+  padding: 8px 14px;
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.mockup-title .tag {
+  background: var(--accent);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+/* 桌面应用窗口 */
+.app-window {
+  background: #ecf0f1;
+  font-family: -apple-system, "PingFang SC", sans-serif;
+}
+.window-header {
+  background: linear-gradient(to bottom, #e8e8e8, #d8d8d8);
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #c0c0c0;
+}
+.window-header .title {
+  font-size: 12px;
+  color: #555;
+  margin-left: 8px;
+}
+.window-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  margin-right: 6px;
+  display: inline-block;
+}
+.dot-red { background: #ff5f57; }
+.dot-yellow { background: #ffbd2e; }
+.dot-green { background: #28c940; }
+
+/* 应用主布局 */
+.app-layout {
+  display: flex;
+  min-height: 400px;
+}
+.sidebar {
+  width: 180px;
+  background: white;
+  border-right: 1px solid #e0e0e0;
+  padding: 8px 0;
+}
+.sidebar-item {
+  padding: 8px 16px;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+}
+.sidebar-item.active {
+  background: #f0f7ff;
+  color: var(--accent);
+  border-left-color: var(--accent);
+  font-weight: 500;
+}
+.content-area {
+  flex: 1;
+  padding: 16px 20px;
+  background: #f5f7fa;
+  overflow: hidden;
+}
+.topbar {
+  background: white;
+  padding: 8px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+/* 卡片 */
+.card {
+  background: white;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.card h3 {
+  font-size: 15px;
+  margin-bottom: 12px;
+  color: var(--primary);
+}
+
+/* 按钮 */
+.btn {
+  display: inline-block;
+  padding: 6px 14px;
+  background: #ecf0f1;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  color: #555;
+  font-size: 12px;
+  cursor: pointer;
+  margin: 2px;
+}
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.btn-success { background: var(--success); border-color: var(--success); color: white; }
+.btn-warning { background: var(--warning); border-color: var(--warning); color: white; }
+.btn-danger { background: var(--danger); border-color: var(--danger); color: white; }
+.btn-sm {
+  padding: 3px 8px;
+  font-size: 11px;
+}
+
+/* 输入框 */
+.form-group {
+  margin-bottom: 10px;
+}
+.form-group label {
+  display: block;
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 4px;
+}
+.form-input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-size: 13px;
+  font-family: inherit;
+  background: white;
+}
+.form-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* 徽章 / 状态 */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--gray-3);
+  color: white;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.badge-success { background: var(--success); }
+.badge-warning { background: var(--warning); }
+.badge-danger { background: var(--danger); }
+.badge-info { background: var(--info); }
+.badge-primary { background: var(--accent); }
+
+/* 状态色点 */
+.status-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.status-dot.green { background: var(--success); }
+.status-dot.yellow { background: var(--warning); }
+.status-dot.red { background: var(--danger); }
+.status-dot.orange { background: #e67e22; }
+.status-dot.gray { background: var(--gray-3); }
+
+/* 数据表格 */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  background: white;
+}
+.data-table th {
+  background: #f5f5f5;
+  padding: 8px 10px;
+  text-align: left;
+  color: var(--gray-5);
+  border-bottom: 2px solid var(--gray-2);
+  font-weight: 600;
+}
+.data-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.data-table tr:hover td {
+  background: #fafbfc;
+}
+.data-table tr.row-error td {
+  background: #fee;
+}
+
+/* 统计卡片 */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+.stat-card {
+  background: white;
+  border-radius: 6px;
+  padding: 16px;
+  text-align: center;
+  border-left: 4px solid var(--accent);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.stat-card.green { border-left-color: var(--success); }
+.stat-card.yellow { border-left-color: var(--warning); }
+.stat-card.red { border-left-color: var(--danger); }
+.stat-card.orange { border-left-color: #e67e22; }
+.stat-card .num {
+  font-size: 28px;
+  font-weight: bold;
+  color: var(--primary);
+}
+.stat-card .label {
+  font-size: 12px;
+  color: #7f8c8d;
+  margin-top: 4px;
+}
+
+/* 提示框 */
+.tip {
+  background: #e7f3ff;
+  border-left: 4px solid var(--info);
+  padding: 10px 14px;
+  margin: 10px 0;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #2c3e50;
+}
+.tip strong { color: var(--info); }
+.warning {
+  background: #fff3cd;
+  border-left: 4px solid var(--warning);
+  padding: 10px 14px;
+  margin: 10px 0;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #856404;
+}
+.warning strong { color: var(--warning); }
+.danger {
+  background: #f8d7da;
+  border-left: 4px solid var(--danger);
+  padding: 10px 14px;
+  margin: 10px 0;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #721c24;
+}
+.success {
+  background: #d4edda;
+  border-left: 4px solid var(--success);
+  padding: 10px 14px;
+  margin: 10px 0;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #155724;
+}
+
+/* 弹窗 */
+.modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+.modal-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--gray-2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  color: var(--primary);
+}
+.modal-body {
+  padding: 20px;
+}
+.modal-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--gray-2);
+  text-align: right;
+  background: #fafbfc;
+}
+
+/* 时间线 */
+.timeline {
+  position: relative;
+  padding-left: 30px;
+  margin: 16px 0;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: #e0e6ed;
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: 16px;
+}
+.timeline-dot {
+  position: absolute;
+  left: -26px;
+  top: 6px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 0 0 1px #e0e6ed;
+}
+.timeline-content {
+  background: white;
+  border: 1px solid var(--gray-2);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 12px;
+}
+.timeline-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.timeline-action { font-weight: 600; }
+
+/* 流程图 SVG */
+.flow-chart {
+  background: white;
+  border-radius: 6px;
+  padding: 16px;
+  margin: 16px 0;
+  text-align: center;
+}
+
+/* 提示文字 */
+.hint {
+  color: #7f8c8d;
+  font-size: 12px;
+  margin: 4px 0;
+}
+
+/* 角色徽章 */
+.role-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--accent);
+  color: white;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-right: 6px;
+}
+.role-tag.finance { background: #16a085; }
+.role-tag.auditor { background: #8e44ad; }
+.role-tag.reimburser { background: #d35400; }
+
+/* 工具栏 */
+.toolbar {
+  background: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 12px;
+  border: 1px solid var(--gray-2);
+}
+
+/* 步骤编号 */
+.step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 13px;
+  margin-right: 8px;
+}
+
+/* 打印优化 */
+@media print {
+  .toc { display: none; }
+  .main { margin-left: 0; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- 左侧目录 -->
+<nav class="toc">
+  <div class="toc-header">
+    <h1>📘 使用手册</h1>
+    <p>v2.7.0 · 完整版</p>
+  </div>
+  <ul>
+    <li class="chapter"><a href="#ch1">第一章：系统概述</a></li>
+    <li class="chapter"><a href="#ch2">第二章：启动与登录</a></li>
+    <li class="chapter"><a href="#ch3">第三章：报销人使用指南</a></li>
+    <li class="chapter"><a href="#ch4">第四章：稽核员使用指南</a></li>
+    <li class="chapter"><a href="#ch5">第五章：财务使用指南</a></li>
+    <li class="chapter"><a href="#ch6">第六章：管理员功能</a></li>
+    <li class="chapter"><a href="#ch7">第七章：常见问题 FAQ</a></li>
+    <li class="chapter"><a href="#ch8">第八章：v2.8 - v2.10.0d 新功能</a></li>
+    <li class="chapter"><a href="#appA">附录 A：功能矩阵</a></li>
+    <li class="chapter"><a href="#appB">附录 B：默认账号</a></li>
+    <li class="chapter"><a href="#appC">附录 C：快捷键</a></li>
+    <li class="chapter"><a href="#appD">附录 D：版本历史</a></li>
+  </ul>
+</nav>
+
+<!-- 主内容 -->
+<main class="main">
+
+<h1 class="chapter-title" id="ch1">第一章：系统概述</h1>
+
+<h2>1.1 系统简介</h2>
+<p>报销稽核系统是面向<strong>基层单位</strong>的离线优先桌面应用，用于管理"差旅报销"的全流程。三种角色使用<strong>不同的客户端</strong>，共享一套 SQLite 数据库：</p>
+
+<div class="flow-chart">
+  <svg viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%;">
+    <defs>
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="#4472C4"/>
+      </marker>
+    </defs>
+    <!-- 标题 -->
+    <text x="400" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#2c3e50">三客户端架构</text>
+
+    <!-- 报销人客户端 -->
+    <rect x="50" y="80" width="160" height="80" rx="8" fill="#d35400" />
+    <text x="130" y="110" text-anchor="middle" font-size="14" font-weight="bold" fill="white">📋 报销人版</text>
+    <text x="130" y="135" text-anchor="middle" font-size="12" fill="white">发起报销</text>
+
+    <!-- 稽核员客户端 -->
+    <rect x="320" y="80" width="160" height="80" rx="8" fill="#8e44ad" />
+    <text x="400" y="110" text-anchor="middle" font-size="14" font-weight="bold" fill="white">✍ 稽核员版</text>
+    <text x="400" y="135" text-anchor="middle" font-size="12" fill="white">初审</text>
+
+    <!-- 财务客户端 -->
+    <rect x="590" y="80" width="160" height="80" rx="8" fill="#16a085" />
+    <text x="670" y="110" text-anchor="middle" font-size="14" font-weight="bold" fill="white">💰 财务版</text>
+    <text x="670" y="135" text-anchor="middle" font-size="12" fill="white">终审 / 管理</text>
+
+    <!-- 箭头 -->
+    <line x1="210" y1="200" x2="400" y2="200" stroke="#4472C4" stroke-width="2" marker-end="url(#arrow)"/>
+    <line x1="480" y1="200" x2="590" y2="200" stroke="#4472C4" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <!-- 共享数据库 -->
+    <rect x="250" y="200" width="300" height="50" rx="6" fill="#34495e" />
+    <text x="400" y="230" text-anchor="middle" font-size="14" font-weight="bold" fill="white">💾 共享 reimbursement.db (SQLite)</text>
+  </svg>
+</div>
+
+<h2>1.2 三种角色对比（v2.10.0d 角色职责明确）</h2>
+
+<table>
+<thead>
+<tr><th>角色</th><th>性质</th><th>客户端</th><th>核心职责</th><th>关键功能</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td><span class="role-tag finance">财务</span></td>
+  <td><strong>岗位账户</strong></td>
+  <td>财务版</td>
+  <td>创建稽核员、终审、配置</td>
+  <td>终审、双签、override、报表、审计、导入导出、字典、大屏、升级、<strong>下发稽核员客户端</strong></td>
+</tr>
+<tr>
+  <td><span class="role-tag auditor">稽核员</span></td>
+  <td><strong>岗位账户</strong></td>
+  <td>稽核员版</td>
+  <td>创建报销员、创建项目、初审、考勤审批</td>
+  <td>初审、查重、<strong>代填报销 + 代填考勤（直接通过）</strong>、<strong>审批报销员考勤</strong>、<strong>创建项目+项目人员</strong>、<strong>下发报销员客户端</strong>、管理代理关系</td>
+</tr>
+<tr>
+  <td><span class="role-tag reimburser">报销人</span></td>
+  <td><strong>自然人</strong></td>
+  <td>报销人版</td>
+  <td>自助录考勤、自助报销</td>
+  <td>录入单据、查看进度、上传附件、OCR 识别、<strong>录入考勤（待稽核员审核）</strong></td>
+</tr>
+</tbody>
+</table>
+
+<div class="info">
+  <strong>ℹ v2.10.0d 职责边界</strong>：
+  <ul>
+    <li><strong>财务</strong>：唯一能创建稽核员、唯一能下稽核员客户端</li>
+    <li><strong>稽核员</strong>：能创建报销员、能创建项目、能下报销员客户端、能代填、能审批</li>
+    <li><strong>报销员</strong>：自助录<strong>待审</strong>考勤 + 自助<strong>待审</strong>报销，<strong>无任何代理管理权</strong>（不能设/撤代理）</li>
+  </ul>
+</div>
+
+<div class="warning">
+  <strong>⚠ 角色与客户端严格绑定</strong>：报销人账号登录财务客户端会被拒绝（O12 决策）。
+</div>
+
+<h2>1.3 单据生命周期（状态机）</h2>
+
+<div class="flow-chart">
+  <svg viewBox="0 0 1000 320" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%;">
+    <defs>
+      <marker id="arr" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="#555"/>
+      </marker>
+      <marker id="arr-r" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="#e74c3c"/>
+      </marker>
+      <marker id="arr-g" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="#27ae60"/>
+      </marker>
+    </defs>
+
+    <!-- 节点 -->
+    <rect x="20" y="100" width="100" height="50" rx="25" fill="#95a5a6"/>
+    <text x="70" y="130" text-anchor="middle" font-size="13" fill="white" font-weight="bold">草稿</text>
+
+    <rect x="160" y="100" width="130" height="50" rx="25" fill="#3498db"/>
+    <text x="225" y="130" text-anchor="middle" font-size="12" fill="white" font-weight="bold">待初审</text>
+
+    <rect x="160" y="30" width="130" height="50" rx="25" fill="#e67e22"/>
+    <text x="225" y="60" text-anchor="middle" font-size="12" fill="white" font-weight="bold">初审驳回</text>
+
+    <rect x="330" y="100" width="130" height="50" rx="25" fill="#3498db"/>
+    <text x="395" y="130" text-anchor="middle" font-size="12" fill="white" font-weight="bold">已初审</text>
+
+    <rect x="500" y="100" width="130" height="50" rx="25" fill="#3498db"/>
+    <text x="565" y="130" text-anchor="middle" font-size="12" fill="white" font-weight="bold">待终审</text>
+
+    <rect x="500" y="180" width="130" height="50" rx="25" fill="#f39c12"/>
+    <text x="565" y="210" text-anchor="middle" font-size="12" fill="white" font-weight="bold">待双签</text>
+
+    <rect x="670" y="100" width="120" height="50" rx="25" fill="#27ae60"/>
+    <text x="730" y="125" text-anchor="middle" font-size="12" fill="white" font-weight="bold">已批准</text>
+    <text x="730" y="142" text-anchor="middle" font-size="11" fill="white">approved</text>
+
+    <rect x="670" y="180" width="120" height="50" rx="25" fill="#27ae60"/>
+    <text x="730" y="205" text-anchor="middle" font-size="12" fill="white" font-weight="bold">已归档</text>
+    <text x="730" y="222" text-anchor="middle" font-size="11" fill="white">archived</text>
+
+    <rect x="830" y="30" width="140" height="50" rx="25" fill="#e74c3c"/>
+    <text x="900" y="60" text-anchor="middle" font-size="12" fill="white" font-weight="bold">财务驳回</text>
+
+    <!-- 箭头 -->
+    <path d="M 120 125 L 160 125" stroke="#555" stroke-width="2" marker-end="url(#arr)" fill="none"/>
+    <text x="140" y="118" text-anchor="middle" font-size="10" fill="#555">提交</text>
+
+    <path d="M 225 100 L 225 80" stroke="#e74c3c" stroke-width="2" marker-end="url(#arr-r)" fill="none"/>
+    <text x="240" y="92" font-size="10" fill="#e74c3c">驳回</text>
+    <path d="M 225 80 L 120 80 L 120 100" stroke="#e74c3c" stroke-width="2" marker-end="url(#arr-r)" fill="none" stroke-dasharray="4 2"/>
+    <text x="170" y="74" font-size="10" fill="#e74c3c">重新提交</text>
+
+    <path d="M 290 125 L 330 125" stroke="#555" stroke-width="2" marker-end="url(#arr)" fill="none"/>
+    <text x="310" y="118" text-anchor="middle" font-size="10" fill="#555">通过</text>
+
+    <path d="M 460 125 L 500 125" stroke="#555" stroke-width="2" marker-end="url(#arr)" fill="none"/>
+    <text x="480" y="118" text-anchor="middle" font-size="10" fill="#555">流转</text>
+
+    <path d="M 630 125 L 670 125" stroke="#27ae60" stroke-width="2" marker-end="url(#arr-g)" fill="none"/>
+    <text x="650" y="118" text-anchor="middle" font-size="10" fill="#27ae60">小额</text>
+
+    <path d="M 630 180 L 670 180" stroke="#27ae60" stroke-width="2" marker-end="url(#arr-g)" fill="none"/>
+    <text x="650" y="172" text-anchor="middle" font-size="10" fill="#27ae60">大额双签</text>
+
+    <path d="M 565 180 L 565 150" stroke="#555" stroke-width="2" marker-end="url(#arr)" fill="none"/>
+    <text x="578" y="172" font-size="10" fill="#555">≥10万</text>
+
+    <path d="M 730 150 L 730 180" stroke="#27ae60" stroke-width="2" marker-end="url(#arr-g)" fill="none"/>
+    <text x="745" y="170" font-size="10" fill="#27ae60">通过</text>
+
+    <path d="M 630 130 L 830 80" stroke="#e74c3c" stroke-width="2" marker-end="url(#arr-r)" fill="none" stroke-dasharray="4 2"/>
+    <text x="730" y="100" font-size="10" fill="#e74c3c">驳回</text>
+  </svg>
+</div>
+
+
+<!-- 第二章 -->
+<h1 class="chapter-title" id="ch2">第二章：启动与登录</h1>
+
+<h2>2.1 启动客户端</h2>
+
+<h3>Windows</h3>
+<div class="mockup">
+  <div class="mockup-title">
+    <span>💻 桌面双击启动</span>
+    <span class="tag">Windows 10/11</span>
+  </div>
+  <div class="app-window">
+    <div class="window-header">
+      <span class="window-dot dot-red"></span>
+      <span class="window-dot dot-yellow"></span>
+      <span class="window-dot dot-green"></span>
+      <span class="title">reimbursement_finance.exe</span>
+    </div>
+    <div class="content-area" style="text-align: center; padding: 40px;">
+      <h3 style="color: var(--accent); margin-bottom: 16px;">🚀 报销稽核系统 - 财务版</h3>
+      <p style="color: #7f8c8d; margin-bottom: 20px;">正在启动...</p>
+      <div style="width: 200px; height: 4px; background: #ecf0f1; border-radius: 2px; margin: 0 auto;">
+        <div style="width: 60%; height: 100%; background: var(--accent); border-radius: 2px;"></div>
+      </div>
+      <p style="color: #7f8c8d; font-size: 12px; margin-top: 20px;">正在加载数据库... 正在启动 Flask 服务...</p>
+    </div>
+  </div>
+</div>
+
+<h3>首次启动依赖检查</h3>
+<div class="mockup">
+  <div class="mockup-title">
+    <span>🔍 依赖检查</span>
+    <span class="tag">首次启动</span>
+  </div>
+  <div class="app-window">
+    <div style="background: white; padding: 16px; border-bottom: 1px solid #e0e0e0;">
+      <strong>✓ 依赖检查</strong>
+    </div>
+    <div style="padding: 16px; background: #f8f9fa;">
+      <div style="background: white; padding: 12px; border-radius: 4px; border-left: 3px solid var(--success); margin-bottom: 8px;">
+        <strong>✓ Python 3.11+</strong> <span style="color: #7f8c8d; font-size: 12px;">已安装 (3.11.2)</span>
+      </div>
+      <div style="background: white; padding: 12px; border-radius: 4px; border-left: 3px solid var(--success); margin-bottom: 8px;">
+        <strong>✓ Flask</strong> <span style="color: #7f8c8d; font-size: 12px;">已安装 (3.1.3)</span>
+      </div>
+      <div style="background: white; padding: 12px; border-radius: 4px; border-left: 3px solid var(--success); margin-bottom: 8px;">
+        <strong>✓ cryptography</strong> <span style="color: #7f8c8d; font-size: 12px;">已安装 (43.0.1)</span>
+      </div>
+      <div style="background: white; padding: 12px; border-radius: 4px; border-left: 3px solid var(--success); margin-bottom: 8px;">
+        <strong>✓ pywebview</strong> <span style="color: #7f8c8d; font-size: 12px;">已安装 (6.2.1)</span>
+      </div>
+      <div style="background: white; padding: 12px; border-radius: 4px; border-left: 3px solid var(--success);">
+        <strong>✓ 数据库</strong> <span style="color: #7f8c8d; font-size: 12px;">已就绪 (reimbursement.db, v2.7.0)</span>
+      </div>
+      <div style="margin-top: 16px; text-align: right;">
+        <button class="btn btn-primary">进入登录 →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>2.2 登录界面</h2>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>🔐 登录窗口</span>
+    <span class="tag">reimbursement_finance</span>
+  </div>
+  <div class="app-window" style="display: flex; align-items: center; justify-content: center; min-height: 400px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div style="background: white; padding: 32px 40px; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 360px;">
+      <h3 style="text-align: center; color: var(--primary); margin-bottom: 24px;">💰 报销稽核系统</h3>
+      <p style="text-align: center; color: #7f8c8d; font-size: 12px; margin-bottom: 20px;">财务版</p>
+
+      <div class="form-group">
+        <label>用户名</label>
+        <input class="form-input" value="admin" />
+      </div>
+      <div class="form-group">
+        <label>密码</label>
+        <input class="form-input" type="password" value="••••••••••••" />
+      </div>
+      <div class="form-group">
+        <label>客户端类型</label>
+        <input class="form-input" value="财务版 (Finance)" disabled style="background: #f5f5f5;" />
+      </div>
+      <button class="btn btn-primary" style="width: 100%; padding: 10px; font-size: 14px; margin-top: 12px;">登 录</button>
+      <p style="text-align: center; color: #7f8c8d; font-size: 11px; margin-top: 16px;">首次登录需修改默认密码</p>
+    </div>
+  </div>
+</div>
+
+<h3>默认账号</h3>
+<table>
+<thead>
+<tr><th>角色</th><th>用户名</th><th>默认密码</th></tr>
+</thead>
+<tbody>
+<tr><td><span class="role-tag finance">财务（管理员）</span></td><td><code>admin</code></td><td><code>NewP@ss123</code></td></tr>
+<tr><td><span class="role-tag auditor">稽核员</span></td><td><code>audit001</code></td><td><code>Audit@001!</code></td></tr>
+<tr><td><span class="role-tag reimburser">报销人</span></td><td><code>reimb001</code></td><td><code>Reimb@001!</code></td></tr>
+</tbody>
+</table>
+
+
+<!-- 第三章 -->
+<h1 class="chapter-title" id="ch3">第三章：报销人使用指南</h1>
+
+<h2>3.1 报销人版主界面</h2>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>🏠 报销人工作台 - 张三</span>
+    <span class="tag">v2.7.0</span>
+  </div>
+  <div class="app-window">
+    <div class="window-header">
+      <span class="window-dot dot-red"></span>
+      <span class="window-dot dot-yellow"></span>
+      <span class="window-dot dot-green"></span>
+      <span class="title">报销稽核系统 - 报销人版</span>
+    </div>
+    <div style="display: flex;">
+      <div class="sidebar" style="width: 200px;">
+        <div class="sidebar-item">🏠 工作台</div>
+        <div class="sidebar-item active">📋 我的报销单</div>
+        <div class="sidebar-item">➕ 新建报销</div>
+        <div class="sidebar-item">📅 考勤录入</div>
+        <div class="sidebar-item">📷 票据识别</div>
+        <div class="sidebar-item">👤 我的资料</div>
+        <div class="sidebar-item">🔔 通知中心</div>
+        <div class="sidebar-item">🔑 修改密码</div>
+      </div>
+      <div class="content-area" style="flex: 1;">
+        <div class="topbar">
+          <span>📋 我的报销单</span>
+          <span>
+            <span style="background: #e74c3c; color: white; padding: 1px 6px; border-radius: 8px; font-size: 11px;">🔔 2</span>
+            <span style="margin-left: 12px;">张三</span>
+            <button class="btn btn-sm" style="margin-left: 12px;">退出</button>
+          </span>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="num">12</div>
+            <div class="label">累计报销</div>
+          </div>
+          <div class="stat-card green">
+            <div class="num">10</div>
+            <div class="label">已归档</div>
+          </div>
+          <div class="stat-card yellow">
+            <div class="num">2</div>
+            <div class="label">待审</div>
+          </div>
+          <div class="stat-card red">
+            <div class="num">¥58,000</div>
+            <div class="label">累计金额</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>📋 报销单列表</h3>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>单号</th><th>日期</th><th>项目</th><th>金额</th><th>状态</th><th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>B2026-001</code></td>
+                <td>2026-08-20</td>
+                <td>科研项目2026</td>
+                <td>¥3,400.00</td>
+                <td><span class="badge badge-success">已归档</span></td>
+                <td><button class="btn btn-sm">查看</button></td>
+              </tr>
+              <tr>
+                <td><code>B2026-002</code></td>
+                <td>2026-09-15</td>
+                <td>科研项目2026</td>
+                <td>¥5,000.00</td>
+                <td><span class="badge badge-info">待初审</span></td>
+                <td><button class="btn btn-sm">查看</button></td>
+              </tr>
+              <tr class="row-error">
+                <td><code>B2026-003</code></td>
+                <td>2026-09-20</td>
+                <td>会议项目</td>
+                <td>¥1,200.00</td>
+                <td><span class="badge">草稿</span></td>
+                <td><button class="btn btn-sm btn-primary">编辑</button> <button class="btn btn-sm btn-danger">删除</button></td>
+              </tr>
+              <tr>
+                <td><code>B2026-004</code></td>
+                <td>2026-09-22</td>
+                <td>科研项目2026</td>
+                <td>¥8,000.00</td>
+                <td><span class="badge badge-danger">财务驳回</span></td>
+                <td><button class="btn btn-sm btn-primary">修改后重提</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>3.2 创建报销单</h2>
+
+<h3><span class="step-num">1</span> 进入新建报销</h3>
+<p>点击左侧菜单 <strong>➕ 新建报销</strong>。</p>
+
+<h3><span class="step-num">2</span> 填写基本信息</h3>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>新建报销单 - 第一步：基本信息</span>
+    <span class="tag">step 1/3</span>
+  </div>
+  <div class="card" style="margin: 0;">
+    <h3>📋 基本信息</h3>
+    <div class="form-group">
+      <label>报销类型 <span style="color: var(--danger);">*</span></label>
+      <select class="form-input">
+        <option>个人报销</option>
+        <option>项目总账</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>项目 <span style="color: var(--danger);">*</span></label>
+      <select class="form-input">
+        <option>科研项目 2026 (PRJ001)</option>
+      </select>
+    </div>
+    <div class="form-group" style="display: flex; gap: 12px;">
+      <div style="flex: 1;">
+        <label>出发日期 <span style="color: var(--danger);">*</span></label>
+        <input class="form-input" type="date" value="2026-08-20" />
+      </div>
+      <div style="flex: 1;">
+        <label>返回日期 <span style="color: var(--danger);">*</span></label>
+        <input class="form-input" type="date" value="2026-08-22" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>目的地 <span style="color: var(--danger);">*</span></label>
+      <input class="form-input" value="北京" />
+    </div>
+    <div class="form-group">
+      <label>出差事由</label>
+      <textarea class="form-input" rows="3">参加行业研讨会</textarea>
+    </div>
+    <div style="margin-top: 16px; text-align: right;">
+      <button class="btn">暂存草稿</button>
+      <button class="btn btn-primary">下一步：填金额 →</button>
+    </div>
+  </div>
+</div>
+
+<h3><span class="step-num">3</span> 填写金额明细</h3>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>新建报销单 - 第二步：金额明细</span>
+    <span class="tag">step 2/3</span>
+  </div>
+  <div class="card" style="margin: 0;">
+    <h3>💰 金额明细</h3>
+    <table class="data-table">
+      <thead>
+        <tr><th>项目</th><th>金额（元）</th><th>附件</th><th>操作</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>交通费</td>
+          <td><input class="form-input" style="width: 120px;" value="1500.00" /></td>
+          <td><button class="btn btn-sm">📎 上传</button></td>
+          <td><button class="btn btn-sm btn-danger">删除</button></td>
+        </tr>
+        <tr>
+          <td>住宿费</td>
+          <td><input class="form-input" style="width: 120px;" value="1200.00" /></td>
+          <td><button class="btn btn-sm">📎 上传</button></td>
+          <td><button class="btn btn-sm btn-danger">删除</button></td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+          <td>伙食补助 <span style="color: #7f8c8d; font-size: 11px;">(自动计算)</span></td>
+          <td><strong>¥400.00</strong></td>
+          <td><span style="color: #7f8c8d;">3 天 × 100 元 + 100 元</span></td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>其他费</td>
+          <td><input class="form-input" style="width: 120px;" value="300.00" /></td>
+          <td><button class="btn btn-sm">📎 上传</button></td>
+          <td><button class="btn btn-sm btn-danger">删除</button></td>
+        </tr>
+        <tr style="background: #e8f4f8; font-weight: bold;">
+          <td>合计</td>
+          <td colspan="3">¥3400.00（大写：叁仟肆佰元整）</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top: 12px;">
+      <button class="btn">+ 增加明细</button>
+    </div>
+    <div style="margin-top: 16px; text-align: right;">
+      <button class="btn">← 上一步</button>
+      <button class="btn btn-primary">下一步：确认提交 →</button>
+    </div>
+  </div>
+</div>
+
+<div class="tip">
+  <strong>💡 伙食补助按"差旅标准"自动计算</strong>：按职务等级 × 人员类型 × 出差天数。<strong>无需手填</strong>，系统自动按你的标准算。
+</div>
+
+<h3><span class="step-num">4</span> 确认提交</h3>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>提交确认</span>
+    <span class="tag">step 3/3</span>
+  </div>
+  <div class="card" style="margin: 0;">
+    <h3>✓ 请确认以下信息</h3>
+    <table class="data-table">
+      <tr><td style="width: 140px;"><strong>项目</strong></td><td>科研项目 2026 (PRJ001)</td></tr>
+      <tr><td><strong>出差日期</strong></td><td>2026-08-20 → 2026-08-22 (3 天)</td></tr>
+      <tr><td><strong>目的地</strong></td><td>北京</td></tr>
+      <tr><td><strong>事由</strong></td><td>参加行业研讨会</td></tr>
+      <tr><td><strong>合计</strong></td><td><strong style="color: var(--danger); font-size: 16px;">¥3,400.00</strong></td></tr>
+      <tr><td><strong>大写</strong></td><td>叁仟肆佰元整</td></tr>
+      <tr><td><strong>附件</strong></td><td>3 个（交通 / 住宿 / 其他）</td></tr>
+    </table>
+    <div style="margin-top: 16px; text-align: right;">
+      <button class="btn">← 上一步</button>
+      <button class="btn btn-primary">✓ 确认提交</button>
+    </div>
+  </div>
+</div>
+
+<div class="success">
+  <strong>✓ 提交成功</strong>：单据 B2026-005 已创建并提交稽核员初审。
+</div>
+
+<h2>3.3 查看决策链</h2>
+<p>进入单据详情页，点击右上角 <strong>🔍 查看决策链</strong>：</p>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>🔍 决策链 - B2026-005</span>
+    <span class="tag">¥120,000 大额双签</span>
+  </div>
+  <div class="card" style="margin: 0;">
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 16px;">
+      <div><div class="hint">当前状态</div><span class="badge badge-success">已归档</span></div>
+      <div><div class="hint">总金额</div><strong>¥120,000</strong></div>
+      <div><div class="hint">主审财务</div>#1 admin</div>
+      <div><div class="hint">第二签人</div>#5 finance2</div>
+      <div><div class="hint">双签状态</div><span class="badge badge-success">✓ 通过</span></div>
+    </div>
+
+    <h4>时间线（8 条记录）</h4>
+    <div class="toolbar" style="background: #f0f4f8;">
+      <button class="btn btn-sm">⏮ 上一步</button>
+      <button class="btn btn-sm btn-primary">▶ 播放</button>
+      <button class="btn btn-sm">⏭ 下一步</button>
+      <span style="margin-left: auto; color: #555;">8 / 8</span>
+      <select class="form-input" style="width: 140px;">
+        <option>中（1.5s/步）</option>
+        <option>慢（3s/步）</option>
+        <option>快（0.5s/步）</option>
+      </select>
+      <button class="btn btn-sm">↺ 重放</button>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background: #95a5a6;"></div>
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <span class="timeline-action">CREATE_BILL</span>
+            <span class="badge">操作日志</span>
+            <span style="color: #7f8c8d; font-size: 11px; margin-left: auto;">2026-09-15 10:00</span>
+          </div>
+          <div style="color: #7f8c8d; font-size: 11px;">操作人: 张三 (reimburser) #3</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background: #16a085;"></div>
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <span class="timeline-action">SUBMIT_BILL</span>
+            <span class="badge">操作日志</span>
+            <span style="color: #7f8c8d; font-size: 11px; margin-left: auto;">2026-09-15 10:05</span>
+          </div>
+          <div style="color: #7f8c8d; font-size: 11px;">操作人: 张三 (reimburser) #3</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background: #27ae60;"></div>
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <span class="timeline-action">AUDITOR_APPROVE</span>
+            <span class="badge">操作日志</span>
+            <span style="color: #7f8c8d; font-size: 11px; margin-left: auto;">2026-09-16 14:20</span>
+          </div>
+          <div style="color: #7f8c8d; font-size: 11px;">操作人: 李四 (auditor) #2</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background: #f39c12;"></div>
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <span class="timeline-action" style="color: #f39c12;">FINAL_APPROVE_PENDING_DUAL</span>
+            <span class="badge badge-warning">财务双人会签</span>
+            <span style="color: #7f8c8d; font-size: 11px; margin-left: auto;">2026-09-20 09:00</span>
+          </div>
+          <div style="color: #7f8c8d; font-size: 11px;">操作人: 财务管理员 (finance) #1</div>
+          <div style="margin-top: 4px; font-size: 11px;">
+            <code>submitted_finance → pending_dual_sign</code> · 金额：<strong>¥120,000.00</strong>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot" style="background: #9b59b6;"></div>
+        <div class="timeline-content">
+          <div class="timeline-header">
+            <span class="timeline-action" style="color: #9b59b6;">dual_sign_approve</span>
+            <span class="badge" style="background: #9b59b6;">终审独立审计</span>
+            <span style="color: #7f8c8d; font-size: 11px; margin-left: auto;">2026-09-25 14:30</span>
+          </div>
+          <div style="color: #7f8c8d; font-size: 11px;">操作人: finance2 (finance) #5</div>
+          <div style="margin-top: 4px; font-size: 11px;">
+            <code>pending_dual_sign → approved</code>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-item" style="background: #fff3cd; padding: 8px 12px; border-radius: 4px;">
+        <div class="timeline-dot" style="background: var(--success);"></div>
+        <div class="timeline-content" style="background: #fff3cd;">
+          <div class="timeline-header">
+            <span class="timeline-action" style="color: var(--success);">FINAL_APPROVE_DUAL</span>
+            <span class="badge badge-success">财务双人会签</span>
+            <span style="color: #7f8c8d; font-size: 11px; margin-left: auto;">2026-09-25 14:30</span>
+          </div>
+          <div style="color: #7f8c8d; font-size: 11px;">操作人: finance2 (finance) #5</div>
+          <div style="margin-top: 4px; font-size: 11px;">
+            <code>pending_dual_sign → approved</code> · 金额：<strong>¥120,000.00</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>3.4 通知中心</h2>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>🔔 通知中心</span>
+    <span class="tag">12 条通知 · 3 未读</span>
+  </div>
+  <div class="card" style="margin: 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <h3>🔔 通知中心</h3>
+      <div>
+        <span class="badge badge-danger">未读 3</span>
+        <button class="btn btn-primary btn-sm" style="margin-left: 8px;">全部标为已读</button>
+      </div>
+    </div>
+
+    <div style="background: #fef9e7; border-left: 3px solid var(--warning); padding: 12px; border-radius: 4px; margin-bottom: 8px;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+        <span class="badge badge-success">✓ 已批准</span>
+        <span class="badge badge-danger">未读</span>
+        <span style="color: #7f8c8d; font-size: 11px; margin-left: auto;">2026-09-25 14:30</span>
+      </div>
+      <strong style="color: var(--primary);">报销单已批准</strong>
+      <p style="margin: 4px 0; font-size: 13px;">您的报销单 B2026-001（¥3,400）已通过财务终审，等待归档。</p>
+      <div style="display: flex; gap: 12px; font-size: 12px; color: #7f8c8d; margin-top: 6px;">
+        <span>发送人：系统</span>
+        <span>关联单据：<a href="#" style="color: var(--accent);">B2026-001</a></span>
+        <span style="margin-left: auto;">
+          <button class="btn btn-sm">标已读</button>
+          <button class="btn btn-sm">删除</button>
+        </span>
+      </div>
+    </div>
+
+    <div style="background: #fef9e7; border-left: 3px solid var(--warning); padding: 12px; border-radius: 4px; margin-bottom: 8px;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+        <span class="badge badge-danger">✗ 已驳回</span>
+        <span class="badge badge-danger">未读</span>
+        <span style="color: #7f8c8d; font-size: 11px; margin-left: auto;">2026-09-20 10:15</span>
+      </div>
+      <strong style="color: var(--primary);">报销单被驳回</strong>
+      <p style="margin: 4px 0; font-size: 13px;">您的报销单 B2026-004 被财务驳回：<em>交通费超标，建议改用公交</em>。请修改后重新提交。</p>
+      <div style="display: flex; gap: 12px; font-size: 12px; color: #7f8c8d; margin-top: 6px;">
+        <span>发送人：财务管理员</span>
+        <span>关联单据：<a href="#" style="color: var(--accent);">B2026-004</a></span>
+        <span style="margin-left: auto;">
+          <button class="btn btn-sm">标已读</button>
+          <button class="btn btn-sm">删除</button>
+        </span>
+      </div>
+    </div>
+
+    <div style="background: white; border: 1px solid var(--gray-2); padding: 12px; border-radius: 4px; margin-bottom: 8px;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+        <span class="badge">ℹ 系统通知</span>
+        <span style="color: #7f8c8d; font-size: 11px; margin-left: auto;">2026-09-22 09:00</span>
+      </div>
+      <strong style="color: var(--primary);">系统通知</strong>
+      <p style="margin: 4px 0; font-size: 13px;">报销稽核系统 v2.7.0 已发布，新增票据识别功能。</p>
+    </div>
+  </div>
+</div>
+
+<h2>3.5 OCR 票据识别</h2>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>📷 票据识别</span>
+    <span class="tag">OCR (沙箱无外网，用模拟引擎)</span>
+  </div>
+  <div class="card" style="margin: 0;">
+    <h3>📷 票据识别</h3>
+    <p class="hint">上传发票/车票/出租车票图片，自动识别金额、日期、票号，生成报销单草稿。</p>
+
+    <div class="form-group">
+      <label>选择票据图片（jpg / png / pdf，最大 10MB）</label>
+      <input class="form-input" type="file" value="发票_2026-08-20.jpg" disabled />
+    </div>
+    <div class="form-group">
+      <label>报销项目</label>
+      <select class="form-input">
+        <option>科研项目 2026 (PRJ001)</option>
+      </select>
+    </div>
+    <button class="btn btn-primary">📤 上传并识别</button>
+  </div>
+
+  <div class="card" style="margin-top: 12px;">
+    <h3>识别结果</h3>
+    <div class="form-group">
+      <label>票据类型</label>
+      <input class="form-input" value="发票" />
+    </div>
+    <div class="form-group">
+      <label>发票号</label>
+      <input class="form-input" value="12345678" />
+    </div>
+    <div class="form-group">
+      <label>金额（元）</label>
+      <input class="form-input" value="1500.00" />
+    </div>
+    <div class="form-group">
+      <label>日期</label>
+      <input class="form-input" value="2026-08-20" />
+    </div>
+    <div class="form-group">
+      <label>销售方/抬头</label>
+      <input class="form-input" value="北京铁路局" />
+    </div>
+    <p class="hint">⚠ 当前使用模拟 OCR 引擎。部署时配置 <code>BAIDU_OCR_TOKEN</code> 等即可启用真实识别。</p>
+    <button class="btn btn-primary" style="margin-top: 12px;">✓ 创建报销单草稿</button>
+  </div>
+</div>
+
+
+<!-- 第四章 -->
+<h1 class="chapter-title" id="ch4">第四章：稽核员使用指南</h1>
+
+<h2>4.1 稽核员工作台</h2>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>✍ 稽核员工作台 - 李四</span>
+    <span class="tag">v2.7.0</span>
+  </div>
+  <div class="app-window">
+    <div style="display: flex;">
+      <div class="sidebar">
+        <div class="sidebar-item active">🏠 工作台</div>
+        <div class="sidebar-item">⏰ 待审单据</div>
+        <div class="sidebar-item">📋 我的报销人单据</div>
+        <div class="sidebar-item">👤 我的报销人</div>
+        <div class="sidebar-item">✍ 代填报销</div>
+        <div class="sidebar-item">📅 考勤</div>
+        <div class="sidebar-item">📜 操作日志</div>
+        <div class="sidebar-item">🔍 终审独立审计</div>
+        <div class="sidebar-item">🔔 通知中心</div>
+        <div class="sidebar-item">🔑 修改密码</div>
+      </div>
+      <div class="content-area" style="flex: 1;">
+        <div class="topbar">
+          <span>🏠 工作台</span>
+          <span>
+            <span style="background: #e74c3c; color: white; padding: 1px 6px; border-radius: 8px; font-size: 11px;">🔔 1</span>
+            <span style="margin-left: 12px;">李四 (稽核员)</span>
+          </span>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="num">5</div>
+            <div class="label">我的报销人</div>
+          </div>
+          <div class="stat-card yellow">
+            <div class="num">2</div>
+            <div class="label">待初审</div>
+          </div>
+          <div class="stat-card green">
+            <div class="num">38</div>
+            <div class="label">本月已审</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>⏰ 待审单据 (2)</h3>
+          <div style="border: 1px solid var(--gray-2); border-radius: 6px; padding: 12px; margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <strong>B2026-005</strong> 张三
+                <span style="margin-left: 8px; color: #7f8c8d; font-size: 12px;">科研项目 2026</span>
+              </div>
+              <div><strong style="color: var(--danger);">¥5,000.00</strong></div>
+            </div>
+            <div style="color: #7f8c8d; font-size: 12px; margin: 4px 0;">出差 2026-08-20 → 2026-08-22 · 北京</div>
+            <div style="margin-top: 8px;">
+              <button class="btn btn-success btn-sm">✓ 通过</button>
+              <button class="btn btn-danger btn-sm">✗ 驳回</button>
+              <button class="btn btn-sm">📄 查看详情</button>
+            </div>
+          </div>
+          <div style="border: 1px solid var(--gray-2); border-radius: 6px; padding: 12px; margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <strong>B2026-006</strong> 李四
+                <span style="margin-left: 8px; color: #7f8c8d; font-size: 12px;">会议项目</span>
+              </div>
+              <div><strong style="color: var(--danger);">¥3,200.00</strong></div>
+            </div>
+            <div style="color: #7f8c8d; font-size: 12px; margin: 4px 0;">出差 2026-09-15 → 2026-09-17 · 上海</div>
+            <div style="margin-top: 8px;">
+              <button class="btn btn-success btn-sm">✓ 通过</button>
+              <button class="btn btn-danger btn-sm">✗ 驳回</button>
+              <button class="btn btn-sm">📄 查看详情</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>4.2 初审单据</h2>
+
+<h3>点击 [通过] 流程</h3>
+<div class="mockup">
+  <div class="mockup-title">
+    <span>稽核通过对话框</span>
+    <span class="tag">modal</span>
+  </div>
+  <div style="background: #555; padding: 30px;">
+    <div style="background: white; max-width: 500px; margin: 0 auto; border-radius: 8px; overflow: hidden;">
+      <div style="padding: 16px 20px; border-bottom: 1px solid var(--gray-2); display: flex; justify-content: space-between;">
+        <strong>✓ 稽核通过 - B2026-005</strong>
+        <button style="background: none; border: none; font-size: 20px; color: #7f8c8d;">×</button>
+      </div>
+      <div style="padding: 20px;">
+        <p style="margin-bottom: 12px;">确认通过 <strong>B2026-005</strong>（张三，¥5,000）？</p>
+        <div class="form-group">
+          <label>审核意见（可选）</label>
+          <textarea class="form-input" rows="3">金额合理，同意报销。建议下次合并差旅减少出差频次。</textarea>
+        </div>
+        <p class="hint">通过后单据将进入财务终审。</p>
+      </div>
+      <div style="padding: 12px 20px; border-top: 1px solid var(--gray-2); text-align: right; background: #fafbfc;">
+        <button class="btn">取消</button>
+        <button class="btn btn-success">✓ 确认通过</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3>点击 [驳回] 流程</h3>
+<div class="mockup">
+  <div class="mockup-title">
+    <span>稽核驳回对话框</span>
+    <span class="tag">必须填原因</span>
+  </div>
+  <div style="background: #555; padding: 30px;">
+    <div style="background: white; max-width: 500px; margin: 0 auto; border-radius: 8px; overflow: hidden;">
+      <div style="padding: 16px 20px; border-bottom: 1px solid var(--gray-2);">
+        <strong style="color: var(--danger);">✗ 稽核驳回 - B2026-005</strong>
+      </div>
+      <div style="padding: 20px;">
+        <div class="form-group">
+          <label>驳回原因 <span style="color: var(--danger);">* (≥10 字符)</span></label>
+          <textarea class="form-input" rows="4">交通费 1500 元超标（标准 800 元），请重新核算后重新提交。</textarea>
+          <p style="color: var(--success); font-size: 11px; margin-top: 4px;">✓ 已 25 字符</p>
+        </div>
+        <p class="hint">驳回原因会作为通知发给报销人，并自动填入单据批注栏。</p>
+      </div>
+      <div style="padding: 12px 20px; border-top: 1px solid var(--gray-2); text-align: right; background: #fafbfc;">
+        <button class="btn">取消</button>
+        <button class="btn btn-danger">✗ 确认驳回</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>4.3 代填报销</h2>
+
+<div class="tip">
+  <strong>代填报销</strong>：适用于老同志不会用系统或紧急单据。<strong>G2 决策</strong>：代填的单据跳过稽核员初审，直接进入财务终审。
+</div>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>✍ 代填报销</span>
+    <span class="tag">跳过初审</span>
+  </div>
+  <div class="card" style="margin: 0;">
+    <h3>为我的报销人代填</h3>
+    <div class="form-group">
+      <label>报销人 <span style="color: var(--danger);">*</span></label>
+      <select class="form-input">
+        <option>张三 (reimb001)</option>
+        <option>李四 (reimb002)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>项目 <span style="color: var(--danger);">*</span></label>
+      <select class="form-input">
+        <option>科研项目 2026</option>
+      </select>
+    </div>
+    <div style="background: #fff3cd; border-left: 3px solid var(--warning); padding: 8px 12px; border-radius: 4px; margin: 12px 0;">
+      ⚠ <strong>注意</strong>：代填 = 已审。提交后单据直接进入财务终审，<strong>不会经过您（稽核员）的初审</strong>。
+    </div>
+    <button class="btn btn-primary">下一步 →</button>
+  </div>
+</div>
+
+
+<!-- 第四章 续：考勤审批 + 代理关系管理 -->
+<h2>4.4 考勤审批（v2.10.0d 新增）</h2>
+
+<p>报销员通过"考勤录入"自助录入的考勤，进入 <code>pending</code> 状态，等待您审批。
+稽核员代填的考勤直接 <code>approved</code>，不需要再审。</p>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>✅ 考勤审批 - audit001</span>
+    <span class="tag">v2.10.0d</span>
+  </div>
+  <div class="app-window">
+    <div style="display: flex;">
+      <div class="sidebar" style="width: 200px;">
+        <div class="sidebar-item">🏠 工作台</div>
+        <div class="sidebar-item">⏰ 待审单据</div>
+        <div class="sidebar-item">📋 我的报销人单据</div>
+        <div class="sidebar-item">👤 我的报销人</div>
+        <div class="sidebar-item">📂 项目台账</div>
+        <div class="sidebar-item">🤝 代理关系</div>
+        <div class="sidebar-item">✍️ 代填报销</div>
+        <div class="sidebar-item active">✅ 考勤审批 (3)</div>
+        <div class="sidebar-item">📅 考勤</div>
+      </div>
+      <div style="flex: 1; padding: 20px; background: #fafbfc;">
+        <h3>✅ 考勤审批（3）</h3>
+        <p style="color: #7f8c8d; font-size: 13px;">报销员自助录入的考勤，需您审批通过后才记入档案。稽核员代填的考勤已自动审核。</p>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th><th>报销员</th><th>日期</th><th>状态</th><th>备注</th><th>录入人</th><th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>101</td><td>张三</td><td>2026-08-25</td><td><span class="tag">出差</span></td><td><small>北京出差</small></td><td>张三</td>
+              <td>
+                <button class="btn btn-sm btn-success">✓ 通过</button>
+                <button class="btn btn-sm btn-danger">✗ 驳回</button>
+              </td>
+            </tr>
+            <tr>
+              <td>100</td><td>李四</td><td>2026-08-24</td><td><span class="tag">请假</span></td><td><small>事假 1 天</small></td><td>李四</td>
+              <td>
+                <button class="btn btn-sm btn-success">✓ 通过</button>
+                <button class="btn btn-sm btn-danger">✗ 驳回</button>
+              </td>
+            </tr>
+            <tr>
+              <td>99</td><td>王五</td><td>2026-08-23</td><td><span class="tag">在岗</span></td><td><small>-</small></td><td>王五</td>
+              <td>
+                <button class="btn btn-sm btn-success">✓ 通过</button>
+                <button class="btn btn-sm btn-danger">✗ 驳回</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="info">
+  <strong>ℹ 考勤审批流程</strong>：
+  <ol>
+    <li>报销员"考勤录入"页提交 → <code>audit_status='pending'</code></li>
+    <li>稽核员"考勤审批"工作台看到这条待审</li>
+    <li>点击 <strong>[通过]</strong> → <code>audit_status='approved'</code>，记入档案</li>
+    <li>点击 <strong>[驳回]</strong> → <code>audit_status='rejected'</code>，报销员可重新录</li>
+  </ol>
+  <p><strong>边界</strong>：稽核员只能审批自己代理的报销员（agent_auth active 关系）</p>
+</div>
+
+
+<h2>4.5 代理关系管理（v2.10.0d 核心）</h2>
+
+<p><strong>代理关系</strong>决定一个报销员是否需要登录客户端，还是由稽核员全权代办。代理关系由
+<strong>财务/稽核员</strong>在"项目台账"中为该项目设置（按项目粒度），报销员无权设置。</p>
+
+<div class="flow-chart">
+<pre>
+[项目台账] → 选项目 → [🤝 代填] 按钮
+                ↓
+        ┌──────────────────────┐
+        │ 选稽核员:  [audit001] │
+        │ 选报销员:  [reimb001] │
+        │ 代理模式:  [全权]     │  ← full / attendance_only / bill_only
+        │ 有效期:    [2026-08-25 → 2026-12-31] │
+        └──────────────────────┘
+                ↓
+        [建立] → agent_auth 记录入库
+                ↓
+        报销员 mode-c-status 自动更新
+</pre>
+</div>
+
+<h3>代理模式 C 三种状态（基于项目覆盖度）</h3>
+
+<table>
+<thead>
+<tr><th>状态</th><th>判定</th><th>是否生成客户端</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td><span class="tag tag-success">agent_c</span></td>
+  <td>报销员所有项目都被代理</td>
+  <td>❌ 不生成（稽核员全权代办）</td>
+</tr>
+<tr>
+  <td><span class="tag tag-warning">partial</span></td>
+  <td>部分项目被代理</td>
+  <td>✅ 生成（混合模式）</td>
+</tr>
+<tr>
+  <td><span class="tag">self</span></td>
+  <td>无代理关系</td>
+  <td>✅ 生成（自助模式）</td>
+</tr>
+<tr>
+  <td><span class="tag tag-danger">orphan</span></td>
+  <td>未绑定任何项目</td>
+  <td>⚠ 暂不生成</td>
+</tr>
+</tbody>
+</table>
+
+<h3>代理权限分级（v2.10.0d 新增）</h3>
+
+<table>
+<thead>
+<tr><th>agent_mode</th><th>代填考勤</th><th>代填报销</th></tr>
+</thead>
+<tbody>
+<tr><td><code>full</code></td><td>✅ 直接通过</td><td>✅ 直接通过</td></tr>
+<tr><td><code>attendance_only</code></td><td>✅ 直接通过</td><td>❌ 无权</td></tr>
+<tr><td><code>bill_only</code></td><td>❌ 无权</td><td>✅ 直接通过</td></tr>
+</tbody>
+</table>
+
+<div class="warning">
+  <strong>⚠ 报销员无任何代理管理权</strong>：
+  <ul>
+    <li>报销员不能设置代理（API 拦截：403）</li>
+    <li>报销员不能撤销代理（API 拦截：403）</li>
+    <li>报销员看不到"代理关系"菜单</li>
+  </ul>
+  原因：报销依托项目，<strong>项目由稽核员/财务创建</strong>，所以代理由创建方设置。
+</div>
+
+
+<!-- 第五章 -->
+<h1 class="chapter-title" id="ch5">第五章：财务使用指南</h1>
+
+<h2>5.1 财务工作台</h2>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>💰 财务工作台 - admin</span>
+    <span class="tag">v2.7.0</span>
+  </div>
+  <div class="app-window">
+    <div style="display: flex;">
+      <div class="sidebar" style="width: 200px;">
+        <div class="sidebar-item active">🏠 工作台</div>
+        <div class="sidebar-item">📋 报销单管理</div>
+        <div class="sidebar-item">⏰ 待审单据</div>
+        <div class="sidebar-item">💰 财务终审</div>
+        <div class="sidebar-item">🤝 待双签</div>
+        <div class="sidebar-item">⚡ override 历史</div>
+        <div class="sidebar-item">📂 项目台账</div>
+        <div class="sidebar-item">👥 人员账号</div>
+        <div class="sidebar-item">📊 报销标准</div>
+        <div class="sidebar-item">📅 考勤查询</div>
+        <div class="sidebar-item">📈 统计报表</div>
+        <div class="sidebar-item">📥 数据导入向导</div>
+        <div class="sidebar-item">📤 数据导出</div>
+        <div class="sidebar-item">📦 数据包交换</div>
+        <div class="sidebar-item">🔄 中心节点同步</div>
+        <div class="sidebar-item">📜 审计日志</div>
+        <div class="sidebar-item">🔍 终审独立审计</div>
+        <div class="sidebar-item">🚀 应用升级</div>
+        <div class="sidebar-item">📖 数据字典</div>
+        <div class="sidebar-item">📊 可视化大屏</div>
+        <div class="sidebar-item">📷 票据识别</div>
+        <div class="sidebar-item">🔔 通知中心</div>
+        <div class="sidebar-item">🔑 修改密码</div>
+      </div>
+      <div class="content-area" style="flex: 1;">
+        <div class="topbar">
+          <span>💰 财务终审工作台</span>
+          <span>
+            <span style="background: #e74c3c; color: white; padding: 1px 6px; border-radius: 8px; font-size: 11px;">🔔 3</span>
+            <span style="margin-left: 12px;">admin (财务)</span>
+          </span>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="num">12</div>
+            <div class="label">待终审</div>
+          </div>
+          <div class="stat-card green">
+            <div class="num">8</div>
+            <div class="label">小额（单签）</div>
+          </div>
+          <div class="stat-card yellow">
+            <div class="num">4</div>
+            <div class="label">大额（双签）</div>
+          </div>
+          <div class="stat-card orange">
+            <div class="num">1</div>
+            <div class="label">待我双签</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>待终审单据（12）</h3>
+          <div style="border: 1px solid var(--gray-2); border-radius: 6px; padding: 12px; margin-bottom: 8px; border-left: 4px solid #27ae60;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <strong>B2026-005</strong> 张三
+                <span class="badge badge-success" style="margin-left: 8px;">🟢 小额</span>
+              </div>
+              <div><strong>¥3,400.00</strong></div>
+            </div>
+            <div style="color: #7f8c8d; font-size: 12px; margin: 4px 0;">科研项目2026 · 2026-08-20 → 2026-08-22</div>
+            <div style="margin-top: 8px;">
+              <button class="btn btn-success btn-sm">✓ 终审通过</button>
+              <button class="btn btn-danger btn-sm">✗ 终审驳回</button>
+              <button class="btn btn-sm">📄 详情</button>
+            </div>
+          </div>
+          <div style="border: 1px solid var(--gray-2); border-radius: 6px; padding: 12px; margin-bottom: 8px; border-left: 4px solid #e74c3c;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <strong>B2026-003</strong> 王五
+                <span class="badge badge-danger" style="margin-left: 8px;">🔴 大额（需双签）</span>
+              </div>
+              <div><strong style="color: var(--danger);">¥120,000.00</strong></div>
+            </div>
+            <div style="color: #7f8c8d; font-size: 12px; margin: 4px 0;">科研项目2026 · 2026-09-01 → 2026-09-10</div>
+            <div style="margin-top: 8px;">
+              <button class="btn btn-warning btn-sm">🤝 终审通过（双签）</button>
+              <button class="btn btn-danger btn-sm">✗ 终审驳回</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>5.2 终审大额报销（双签）</h2>
+
+<h3>主财务：选第二签人</h3>
+<div class="mockup">
+  <div class="mockup-title">
+    <span>大额报销 - 选第二签人</span>
+    <span class="tag">D3 真双签</span>
+  </div>
+  <div style="background: #555; padding: 30px;">
+    <div style="background: white; max-width: 500px; margin: 0 auto; border-radius: 8px; overflow: hidden;">
+      <div style="padding: 16px 20px; border-bottom: 1px solid var(--gray-2);">
+        <strong>🤝 大额报销需双签 - B2026-003</strong>
+      </div>
+      <div style="padding: 20px;">
+        <div class="warning" style="margin-bottom: 12px;">
+          ⚠ <strong>大额报销</strong>（≥ 10 万元）必须两名财务分别操作。请选择第二签人：
+        </div>
+        <div class="form-group">
+          <label>第二签人 <span style="color: var(--danger);">*</span></label>
+          <select class="form-input">
+            <option>-- 选择财务 --</option>
+            <option>finance2 (财务) #5</option>
+            <option>finance3 (财务) #6</option>
+          </select>
+          <p class="hint" style="margin-top: 4px;">不能选择自己（您是 ID #1）</p>
+        </div>
+        <div class="form-group">
+          <label>主审意见</label>
+          <textarea class="form-input" rows="3">金额较大但已核实住宿 + 交通发票 + 会议通知。同意进入双签。</textarea>
+        </div>
+      </div>
+      <div style="padding: 12px 20px; border-top: 1px solid var(--gray-2); text-align: right; background: #fafbfc;">
+        <button class="btn">取消</button>
+        <button class="btn btn-warning">🤝 提交双签</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3>第二签人：待双签工作台</h3>
+<div class="mockup">
+  <div class="mockup-title">
+    <span>🤝 待双签 - finance2</span>
+    <span class="tag">2 单待我审批</span>
+  </div>
+  <div class="app-window">
+    <div class="card" style="margin: 0;">
+      <h3>🤝 待双签工作台</h3>
+      <p class="hint">你是被指定为第二签人的财务。点击单据查看详情，再决定同意或拒绝。</p>
+
+      <div style="border: 1px solid var(--gray-2); border-radius: 6px; padding: 12px; margin: 12px 0; border-left: 4px solid var(--warning);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <strong>B2026-003</strong> 王五
+            <span class="badge badge-warning" style="margin-left: 8px;">⏳ 待双签</span>
+          </div>
+          <div><strong style="color: var(--danger);">¥120,000.00</strong></div>
+        </div>
+        <div style="color: #7f8c8d; font-size: 12px; margin: 4px 0;">
+          主财务 #1 签字时间：2026-09-20 09:00<br/>
+          主审意见：<em>"金额较大但已核实住宿 + 交通发票 + 会议通知。同意进入双签。"</em>
+        </div>
+        <div style="margin-top: 8px;">
+          <button class="btn btn-success btn-sm">✓ 同意终审</button>
+          <button class="btn btn-danger btn-sm">✗ 拒绝</button>
+          <button class="btn btn-sm">📄 查看详情</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>5.3 Override 强制修改</h2>
+
+<div class="warning">
+  <strong>⚠ 紧急情况下</strong>，财务可修改任意单据的状态。所有 override 操作会写入<strong>终审独立审计</strong>（research_audit_log），含 IP / 时间 / 操作人 / 原因。
+</div>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>⚡ 强制修改弹窗</span>
+    <span class="tag">单据详情页操作</span>
+  </div>
+  <div style="background: #555; padding: 30px;">
+    <div style="background: white; max-width: 500px; margin: 0 auto; border-radius: 8px; overflow: hidden;">
+      <div style="padding: 16px 20px; border-bottom: 1px solid var(--gray-2);">
+        <strong>⚡ 强制修改单据 - B2026-003</strong>
+      </div>
+      <div style="padding: 20px;">
+        <div class="form-group">
+          <label>目标状态</label>
+          <select class="form-input">
+            <option>draft (草稿)</option>
+            <option>submitted_auditor (待初审)</option>
+            <option>submitted_finance (待终审)</option>
+            <option>approved (已批准)</option>
+            <option>archived (已归档)</option>
+            <option>rejected_auditor (稽核驳回)</option>
+            <option>rejected_finance (财务驳回)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>原因 <span style="color: var(--danger);">* (≥10 字符，用于审计追溯)</span></label>
+          <textarea class="form-input" rows="3">误操作，需要回退到草稿让报销人重新修改</textarea>
+          <p style="color: var(--success); font-size: 11px;">✓ 已 18 字符</p>
+        </div>
+        <div class="warning" style="font-size: 12px;">
+          ⚠ 此操作会写入终审独立审计，<strong>不可撤销</strong>。
+        </div>
+      </div>
+      <div style="padding: 12px 20px; border-top: 1px solid var(--gray-2); text-align: right; background: #fafbfc;">
+        <button class="btn">取消</button>
+        <button class="btn" style="background: #9b59b6; color: white;">⚡ 确认强制修改</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>5.4 终审独立审计</h2>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>🔍 终审独立审计</span>
+    <span class="tag">审计筛选 + 详情</span>
+  </div>
+  <div class="card" style="margin: 0;">
+    <h3>🔍 终审独立审计</h3>
+    <p class="hint">记录 override / dual_sign_request / approve / reject 操作，用于内部审计与外部合规检查。</p>
+
+    <div class="toolbar">
+      <span>动作:</span>
+      <select class="form-input" style="width: 160px;">
+        <option>全部动作</option>
+        <option>override</option>
+        <option>dual_sign_request</option>
+        <option>dual_sign_approve</option>
+        <option>dual_sign_reject</option>
+      </select>
+      <span>日期:</span>
+      <input class="form-input" type="date" value="2026-09-01" style="width: 140px;" />
+      <span>→</span>
+      <input class="form-input" type="date" value="2026-09-30" style="width: 140px;" />
+      <button class="btn btn-primary btn-sm">查询</button>
+      <button class="btn btn-sm">重置</button>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>时间</th>
+          <th>动作</th>
+          <th>操作人</th>
+          <th>单据</th>
+          <th>状态变更</th>
+          <th>原因</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2026-09-25 14:30</td>
+          <td><span class="badge badge-success">dual_sign_approve</span></td>
+          <td>finance2 (finance)</td>
+          <td><a href="#" style="color: var(--accent);">#5</a></td>
+          <td><code>pending → approved</code></td>
+          <td>同意</td>
+          <td>
+            <button class="btn btn-sm">详情</button>
+            <button class="btn btn-sm">决策链</button>
+          </td>
+        </tr>
+        <tr>
+          <td>2026-09-24 09:15</td>
+          <td><span class="badge" style="background: #9b59b6;">override</span></td>
+          <td>finance3 (finance)</td>
+          <td><a href="#" style="color: var(--accent);">#3</a></td>
+          <td><code>rejected → approved</code></td>
+          <td>复核后确认金额无误，批准</td>
+          <td>
+            <button class="btn btn-sm">详情</button>
+            <button class="btn btn-sm">决策链</button>
+          </td>
+        </tr>
+        <tr>
+          <td>2026-09-20 09:00</td>
+          <td><span class="badge badge-warning">dual_sign_request</span></td>
+          <td>admin (finance)</td>
+          <td><a href="#" style="color: var(--accent);">#5</a></td>
+          <td><code>sub_fin → pending</code></td>
+          <td>主财务 approve，等待 #5</td>
+          <td>
+            <button class="btn btn-sm">详情</button>
+            <button class="btn btn-sm">决策链</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h3>审计详情弹窗</h3>
+<div class="mockup">
+  <div class="mockup-title">
+    <span>审计详情</span>
+    <span class="tag">modal</span>
+  </div>
+  <div style="background: #555; padding: 30px;">
+    <div style="background: white; max-width: 600px; margin: 0 auto; border-radius: 8px; overflow: hidden;">
+      <div style="padding: 16px 20px; border-bottom: 1px solid var(--gray-2); display: flex; justify-content: space-between;">
+        <strong>审计详情</strong>
+        <button style="background: none; border: none; font-size: 20px; color: #7f8c8d;">×</button>
+      </div>
+      <div style="padding: 20px;">
+        <table class="data-table">
+          <tr><td style="width: 140px;"><strong>ID</strong></td><td>123</td></tr>
+          <tr><td><strong>动作</strong></td><td><code>dual_sign_approve</code></td></tr>
+          <tr><td><strong>操作人</strong></td><td>finance2 (finance) #5</td></tr>
+          <tr><td><strong>单据</strong></td><td>#5</td></tr>
+          <tr><td><strong>状态变更</strong></td><td><code>pending_dual_sign → approved</code></td></tr>
+          <tr><td><strong>原因</strong></td><td>同意</td></tr>
+          <tr><td><strong>IP 地址</strong></td><td><code>192.168.1.100</code></td></tr>
+          <tr><td><strong>时间</strong></td><td>2026-09-25 14:30:22</td></tr>
+        </table>
+      </div>
+      <div style="padding: 12px 20px; border-top: 1px solid var(--gray-2); text-align: right; background: #fafbfc;">
+        <button class="btn">关闭</button>
+        <button class="btn btn-primary">查看决策链 →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- 第六章 -->
+<h1 class="chapter-title" id="ch6">第六章：管理员功能</h1>
+
+<h2>6.1 人员账号管理</h2>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>👥 人员账号</span>
+    <span class="tag">3 个用户</span>
+  </div>
+  <div class="card" style="margin: 0;">
+    <div class="toolbar">
+      <button class="btn btn-primary btn-sm">+ 新增账号</button>
+      <button class="btn btn-sm">📥 数据导入</button>
+      <button class="btn btn-sm">📤 数据导出</button>
+      <input class="form-input" style="flex: 1; max-width: 200px;" placeholder="搜索姓名/账号..." />
+      <select class="form-input" style="width: 120px;"><option>全部角色</option></select>
+      <button class="btn btn-primary btn-sm">查询</button>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr><th>姓名</th><th>账号</th><th>角色</th><th>部门</th><th>状态</th><th>操作</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>系统管理员</td>
+          <td><code>admin</code></td>
+          <td><span class="role-tag finance">财务</span></td>
+          <td>财务部</td>
+          <td><span class="badge badge-success">正常</span></td>
+          <td><button class="btn btn-sm">改密</button> <button class="btn btn-sm btn-danger">禁用</button></td>
+        </tr>
+        <tr>
+          <td>李四</td>
+          <td><code>audit001</code></td>
+          <td><span class="role-tag auditor">稽核员</span></td>
+          <td>审计部</td>
+          <td><span class="badge badge-success">正常</span></td>
+          <td><button class="btn btn-sm">改密</button> <button class="btn btn-sm btn-danger">禁用</button></td>
+        </tr>
+        <tr>
+          <td>张三</td>
+          <td><code>reimb001</code></td>
+          <td><span class="role-tag reimburser">报销人</span></td>
+          <td>销售部</td>
+          <td><span class="badge badge-success">正常</span></td>
+          <td><button class="btn btn-sm">改密</button> <button class="btn btn-sm btn-danger">禁用</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h2>6.2 数据导入向导</h2>
+
+<h3>步骤 1：选择类型 + 下载模板</h3>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>📥 数据导入向导 - 步骤 1</span>
+    <span class="tag">step 1/3</span>
+  </div>
+  <div class="card" style="margin: 0;">
+    <h3>📥 数据导入向导</h3>
+    <p class="hint">从 Excel 文件批量导入数据：用户 / 项目 / 报销标准。</p>
+
+    <h4>步骤 1：选择导入类型 + 下载模板</h4>
+    <div class="form-group">
+      <label>导入类型</label>
+      <select class="form-input" style="width: 240px;">
+        <option>用户</option>
+        <option>项目</option>
+        <option>报销标准</option>
+      </select>
+    </div>
+    <p class="hint">📌 用户：必填用户名/姓名/角色/人员类型。角色只能填 finance / auditor / reimburser。</p>
+    <button class="btn">📋 下载模板</button>
+  </div>
+
+  <div class="card" style="margin-top: 12px;">
+    <h4>下载的 Excel 模板</h4>
+    <table class="data-table">
+      <thead>
+        <tr style="background: #4472C4; color: white;">
+          <th>用户名</th><th>姓名</th><th>角色</th><th>人员类型</th><th>电话</th><th>邮箱</th><th>部门</th><th>初始密码</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background: #e7f3ff;">
+          <td>zhangsan</td><td>张三</td><td>reimburser</td><td>在编</td><td>13800138000</td><td>zs@example.com</td><td>财务部</td><td>Pass@123</td>
+          <td colspan="8" style="background: #fffbe6; text-align: right;"><em>(示例数据)</em></td>
+        </tr>
+        <tr style="background: #e7f3ff;">
+          <td>lisi</td><td>李四</td><td>auditor</td><td>在编</td><td>13900139000</td><td>ls@example.com</td><td>审计部</td><td>Pass@123</td>
+          <td colspan="8" style="background: #fffbe6; text-align: right;"><em>(示例数据)</em></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h3>步骤 2：上传 + 预览</h3>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>📥 数据导入向导 - 步骤 2</span>
+    <span class="tag">step 2/3</span>
+  </div>
+  <div class="card" style="margin: 0;">
+    <h3>📋 预览 & 校验</h3>
+
+    <div class="stat-grid">
+      <div class="stat-card"><div class="num">5</div><div class="label">总行数</div></div>
+      <div class="stat-card green"><div class="num">3</div><div class="label">可导入</div></div>
+      <div class="stat-card red"><div class="num">2</div><div class="label">有错误</div></div>
+      <div class="stat-card"><div class="num">60%</div><div class="label">通过率</div></div>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>行</th><th>状态</th><th>用户名</th><th>姓名</th><th>角色</th><th>错误</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2</td>
+          <td><span class="badge badge-success">✓</span></td>
+          <td>zhangsan</td><td>张三</td><td>reimburser</td><td>—</td>
+        </tr>
+        <tr class="row-error">
+          <td>3</td>
+          <td><span class="badge badge-danger">✗</span></td>
+          <td>baduser</td><td>非法</td><td>superuser</td>
+          <td style="color: var(--danger); font-size: 11px;">角色：必须为 finance/auditor/reimburser，实际 superuser</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><span class="badge badge-success">✓</span></td>
+          <td>wangwu</td><td>王五</td><td>reimburser</td><td>—</td>
+        </tr>
+        <tr class="row-error">
+          <td>5</td>
+          <td><span class="badge badge-danger">✗</span></td>
+          <td></td><td>无名</td><td>reimburser</td>
+          <td style="color: var(--danger); font-size: 11px;">用户名：必填</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td><span class="badge badge-success">✓</span></td>
+          <td>zhaoliu</td><td>赵六</td><td>auditor</td><td>—</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="hint">错误行高亮（红色背景）。仅显示前 50 行。</p>
+
+    <div style="margin-top: 16px; text-align: right;">
+      <button class="btn">← 重新上传</button>
+      <button class="btn btn-primary">✓ 确认导入</button>
+    </div>
+  </div>
+</div>
+
+<h3>步骤 3：完成</h3>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>✓ 导入完成</span>
+    <span class="tag">step 3/3</span>
+  </div>
+  <div style="background: white; padding: 16px; border-left: 4px solid var(--success); border-radius: 4px;">
+    <p style="font-size: 16px;"><strong>状态：<span style="color: var(--success);">SUCCESS</span></strong></p>
+    <p><strong>总行数：</strong>5 ｜ <strong>成功：</strong>3 ｜ <strong>失败：</strong>2</p>
+    <p class="hint">日志 ID: #12</p>
+  </div>
+  <div style="margin-top: 12px;">
+    <button class="btn">继续导入</button>
+    <button class="btn">查看历史</button>
+  </div>
+</div>
+
+<h2>6.3 数据字典</h2>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>📖 数据字典</span>
+    <span class="tag">24 张表 / 272 字段</span>
+  </div>
+  <div class="card" style="margin: 0;">
+    <div class="stat-grid">
+      <div class="stat-card"><div class="num">24</div><div class="label">表数</div></div>
+      <div class="stat-card green"><div class="num">272</div><div class="label">字段数</div></div>
+      <div class="stat-card yellow"><div class="num">28</div><div class="label">数据行</div></div>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>表名</th><th>说明</th><th>字段数</th><th>主键</th><th>外键</th><th>行数</th><th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>expense_bill</code></td>
+          <td>报销单主表。核心业务表。</td>
+          <td>35</td>
+          <td><code>id</code></td>
+          <td>4</td>
+          <td><span class="badge">12</span></td>
+          <td><button class="btn btn-sm btn-primary">详情</button></td>
+        </tr>
+        <tr>
+          <td><code>sys_user</code></td>
+          <td>用户表。包含财务/稽核员/报销人三类账号。</td>
+          <td>15</td>
+          <td><code>id</code></td>
+          <td>1</td>
+          <td><span class="badge">3</span></td>
+          <td><button class="btn btn-sm btn-primary">详情</button></td>
+        </tr>
+        <tr>
+          <td><code>expense_project</code></td>
+          <td>项目表。每个报销单必须关联一个项目。</td>
+          <td>12</td>
+          <td><code>id</code></td>
+          <td>1</td>
+          <td><span class="badge">2</span></td>
+          <td><button class="btn btn-sm btn-primary">详情</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h3>单表详情</h3>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>📋 expense_bill 详情</span>
+    <span class="tag">35 字段</span>
+  </div>
+  <div class="card" style="margin: 0;">
+    <p style="background: #f8f9fa; padding: 8px 12px; border-radius: 4px; margin-bottom: 12px;">
+      <strong>说明：</strong>报销单主表。核心业务表。
+    </p>
+    <h4>字段（35）</h4>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>列名</th><th>类型</th><th>可空</th><th>默认值</th><th>说明</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>id</code> <span class="badge badge-warning" style="font-size: 9px;">PK</span></td>
+          <td><small>INTEGER</small></td>
+          <td>✗</td>
+          <td>—</td>
+          <td><strong>主键</strong></td>
+        </tr>
+        <tr>
+          <td><code>bill_no</code></td>
+          <td><small>VARCHAR(50)</small></td>
+          <td>✗</td>
+          <td>—</td>
+          <td><strong>单据编号</strong><br/><small style="color: #7f8c8d;">唯一，B + YYYYMMDD + 项目代码 + 序号</small></td>
+        </tr>
+        <tr>
+          <td><code>status</code></td>
+          <td><small>VARCHAR(50)</small></td>
+          <td>✗</td>
+          <td>draft</td>
+          <td>
+            <strong>单据状态</strong><br/>
+            <small style="color: #7f8c8d;">enum: draft / submitted_auditor / auditor_ok / submitted_finance / pending_dual_sign / approved / archived / rejected_auditor / rejected_finance / red_rushed</small><br/>
+            <small style="color: #e67e22;">规则：状态机驱动，转换由 check_status_transition 校验</small>
+          </td>
+        </tr>
+        <tr>
+          <td><code>bill_type</code></td>
+          <td><small>VARCHAR(20)</small></td>
+          <td>✗</td>
+          <td>personal</td>
+          <td>
+            <strong>单据类型</strong><br/>
+            <small style="color: #7f8c8d;">enum: personal / project_total</small>
+          </td>
+        </tr>
+        <tr>
+          <td><code>is_agent_filled</code></td>
+          <td><small>BOOLEAN</small></td>
+          <td>✗</td>
+          <td>0</td>
+          <td>
+            <strong>是否代填</strong><br/>
+            <small style="color: #e67e22;">规则：G2 决策：creator_id != user_id 时为 True</small>
+          </td>
+        </tr>
+        <tr>
+          <td><code>finance_dual_signer_id</code></td>
+          <td><small>INTEGER</small></td>
+          <td>✓</td>
+          <td>—</td>
+          <td>
+            <strong>第二签人</strong><br/>
+            <small style="color: #e67e22;">规则：D3 决策：大额（≥10万）必须两人分别操作</small>
+          </td>
+        </tr>
+        <tr>
+          <td><code>finance_dual_signed</code></td>
+          <td><small>BOOLEAN</small></td>
+          <td>✗</td>
+          <td>0</td>
+          <td>
+            <strong>双签是否通过</strong><br/>
+            <small style="color: #e67e22;">规则：D3 决策：第二签人 approve 时设 True</small>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4 style="margin-top: 16px;">外键关联（4）</h4>
+    <ul style="margin-left: 24px;">
+      <li><code>user_id</code> → <code>sys_user.id</code></li>
+      <li><code>project_id</code> → <code>expense_project.id</code></li>
+      <li><code>auditor_id</code> → <code>sys_user.id</code></li>
+      <li><code>finance_auditor_id</code> → <code>sys_user.id</code></li>
+    </ul>
+
+    <h4 style="margin-top: 16px;">索引（6）</h4>
+    <ul style="margin-left: 24px;">
+      <li><code>idx_bill_no</code> (bill_no)</li>
+      <li><code>idx_bill_status</code> (status)</li>
+      <li><code>idx_bill_user</code> (user_id)</li>
+      <li><code>idx_bill_project</code> (project_id)</li>
+    </ul>
+  </div>
+</div>
+
+<h2>6.4 可视化大屏</h2>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>📊 可视化大屏</span>
+    <span class="tag">2026 年度</span>
+  </div>
+  <div class="card" style="margin: 0;">
+    <div class="toolbar">
+      <span>年份:</span>
+      <select class="form-input" style="width: 100px;"><option>本年</option><option>2026</option></select>
+      <button class="btn btn-sm">🔄 刷新</button>
+    </div>
+
+    <div class="stat-grid" style="grid-template-columns: repeat(5, 1fr);">
+      <div class="stat-card"><div class="num">25</div><div class="label">单据总数</div></div>
+      <div class="stat-card green"><div class="num">18</div><div class="label">已归档</div></div>
+      <div class="stat-card yellow"><div class="num">5</div><div class="label">待处理</div></div>
+      <div class="stat-card"><div class="num" style="font-size: 18px;">¥200,000</div><div class="label">累计总额</div></div>
+      <div class="stat-card orange"><div class="num">3</div><div class="label">未读通知</div></div>
+    </div>
+
+    <h4>月度报销趋势</h4>
+    <div style="background: white; padding: 16px; border-radius: 6px;">
+      <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%;">
+        <!-- 坐标轴 -->
+        <line x1="40" y1="180" x2="660" y2="180" stroke="#ddd"/>
+        <line x1="40" y1="20" x2="40" y2="180" stroke="#ddd"/>
+        <!-- 折线 -->
+        <path d="M 90 160 L 150 130 L 210 100 L 270 110 L 330 60 L 390 90 L 450 50 L 510 80 L 570 40 L 630 30"
+              stroke="#4472C4" stroke-width="2" fill="none"/>
+        <!-- 数据点 -->
+        <circle cx="90" cy="160" r="4" fill="#4472C4"/>
+        <circle cx="150" cy="130" r="4" fill="#4472C4"/>
+        <circle cx="210" cy="100" r="4" fill="#4472C4"/>
+        <circle cx="270" cy="110" r="4" fill="#4472C4"/>
+        <circle cx="330" cy="60" r="4" fill="#4472C4"/>
+        <circle cx="390" cy="90" r="4" fill="#4472C4"/>
+        <circle cx="450" cy="50" r="4" fill="#4472C4"/>
+        <circle cx="510" cy="80" r="4" fill="#4472C4"/>
+        <circle cx="570" cy="40" r="4" fill="#4472C4"/>
+        <circle cx="630" cy="30" r="4" fill="#4472C4"/>
+        <!-- X 标签 -->
+        <text x="90" y="200" text-anchor="middle" font-size="10" fill="#777">1月</text>
+        <text x="150" y="200" text-anchor="middle" font-size="10" fill="#777">2月</text>
+        <text x="210" y="200" text-anchor="middle" font-size="10" fill="#777">3月</text>
+        <text x="270" y="200" text-anchor="middle" font-size="10" fill="#777">4月</text>
+        <text x="330" y="200" text-anchor="middle" font-size="10" fill="#777">5月</text>
+        <text x="390" y="200" text-anchor="middle" font-size="10" fill="#777">6月</text>
+        <text x="450" y="200" text-anchor="middle" font-size="10" fill="#777">7月</text>
+        <text x="510" y="200" text-anchor="middle" font-size="10" fill="#777">8月</text>
+        <text x="570" y="200" text-anchor="middle" font-size="10" fill="#777">9月</text>
+        <text x="630" y="200" text-anchor="middle" font-size="10" fill="#777">10月</text>
+      </svg>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px;">
+      <div>
+        <h4>项目金额 TOP 5</h4>
+        <svg viewBox="0 0 500 220" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%;">
+          <rect x="120" y="20" width="280" height="22" fill="#4472C4" rx="3"/>
+          <text x="115" y="35" text-anchor="end" font-size="11" fill="#555">科研项目</text>
+          <text x="405" y="35" font-size="11" fill="#333">¥80,000</text>
+
+          <rect x="120" y="55" width="200" height="22" fill="#4472C4" rx="3"/>
+          <text x="115" y="70" text-anchor="end" font-size="11" fill="#555">会议项目</text>
+          <text x="325" y="70" font-size="11" fill="#333">¥50,000</text>
+
+          <rect x="120" y="90" width="150" height="22" fill="#4472C4" rx="3"/>
+          <text x="115" y="105" text-anchor="end" font-size="11" fill="#555">出差项目</text>
+          <text x="275" y="105" font-size="11" fill="#333">¥35,000</text>
+
+          <rect x="120" y="125" width="100" height="22" fill="#4472C4" rx="3"/>
+          <text x="115" y="140" text-anchor="end" font-size="11" fill="#555">国际会议</text>
+          <text x="225" y="140" font-size="11" fill="#333">¥20,000</text>
+
+          <rect x="120" y="160" width="50" height="22" fill="#4472C4" rx="3"/>
+          <text x="115" y="175" text-anchor="end" font-size="11" fill="#555">其他</text>
+          <text x="175" y="175" font-size="11" fill="#333">¥15,000</text>
+        </svg>
+      </div>
+      <div>
+        <h4>状态分布</h4>
+        <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg" style="max-width: 100%;">
+          <circle cx="200" cy="110" r="60" fill="#3498db"/>
+          <path d="M 200 110 L 200 50 A 60 60 0 0 1 254 90 Z" fill="#27ae60"/>
+          <path d="M 200 110 L 254 90 A 60 60 0 0 1 240 158 Z" fill="#e67e22"/>
+          <circle cx="200" cy="110" r="35" fill="white"/>
+          <text x="200" y="115" text-anchor="middle" font-size="14" font-weight="bold" fill="#2c3e50">25</text>
+          <!-- 图例 -->
+          <rect x="20" y="20" width="10" height="10" fill="#3498db"/>
+          <text x="35" y="29" font-size="11" fill="#333">archived (10)</text>
+          <rect x="20" y="40" width="10" height="10" fill="#27ae60"/>
+          <text x="35" y="49" font-size="11" fill="#333">approved (8)</text>
+          <rect x="20" y="60" width="10" height="10" fill="#e67e22"/>
+          <text x="35" y="69" font-size="11" fill="#333">sub_fin (5)</text>
+          <rect x="20" y="80" width="10" height="10" fill="#e74c3c"/>
+          <text x="35" y="89" font-size="11" fill="#333">rejected (2)</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>6.5 应用内升级向导</h2>
+
+<div class="mockup">
+  <div class="mockup-title">
+    <span>🚀 应用升级向导</span>
+    <span class="tag">v2.7.0 → v2.8.0</span>
+  </div>
+  <div class="card" style="margin: 0;">
+    <h3>🚀 应用升级向导</h3>
+    <p class="hint">从当前版本一键升级到最新版本。升级前会自动备份数据库。</p>
+
+    <div style="display: flex; align-items: center; gap: 24px; padding: 20px; background: #f8f9fa; border-radius: 8px; margin-bottom: 16px;">
+      <div style="text-align: center; padding: 12px 24px; background: white; border-radius: 6px; min-width: 120px;">
+        <div style="font-size: 11px; color: #7f8c8d;">当前版本</div>
+        <div style="font-size: 22px; font-weight: bold; color: var(--primary);">v2.7.0</div>
+      </div>
+      <div style="font-size: 24px; color: var(--accent);">→</div>
+      <div style="text-align: center; padding: 12px 24px; background: white; border-radius: 6px; min-width: 120px;">
+        <div style="font-size: 11px; color: #7f8c8d;">最新版本</div>
+        <div style="font-size: 22px; font-weight: bold; color: var(--success);">v2.8.0</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn btn-primary btn-sm">🔍 检查更新</button>
+      <button class="btn btn-sm">⚙ 升级前预检</button>
+      <button class="btn btn-sm">📜 版本历史</button>
+    </div>
+
+    <h4 style="margin-top: 16px;">📦 可升级版本（1）</h4>
+    <div style="border: 1px solid var(--gray-2); border-radius: 6px; padding: 12px; margin: 8px 0; display: flex; align-items: center;">
+      <span class="badge badge-primary" style="margin-right: 8px;">v2.8.0</span>
+      <span class="badge" style="background: #95a5a6;">可选</span>
+      <div style="flex: 1; margin-left: 12px;">
+        <strong>新功能：xxx</strong>
+        <small style="color: #7f8c8d; margin-left: 8px;">2026-09-30</small>
+      </div>
+      <button class="btn btn-sm">查看</button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 12px;">
+    <h3>⚙ 升级前预检</h3>
+    <p style="font-size: 18px; color: var(--success); font-weight: bold;">✓ 全部通过</p>
+    <div style="background: #fafbfc; padding: 10px 12px; border-radius: 4px; margin: 8px 0; border-left: 3px solid var(--success);">
+      <span style="color: var(--success); font-size: 18px;">✓</span>
+      <strong>数据库连接</strong>
+      <span style="margin-left: 8px; color: #555;">正常</span>
+    </div>
+    <div style="background: #fafbfc; padding: 10px 12px; border-radius: 4px; margin: 8px 0; border-left: 3px solid var(--success);">
+      <span style="color: var(--success); font-size: 18px;">✓</span>
+      <strong>磁盘空间</strong>
+      <span style="margin-left: 8px; color: #555;">剩余 2048 MB（&gt;100MB）</span>
+    </div>
+    <div style="background: #fafbfc; padding: 10px 12px; border-radius: 4px; margin: 8px 0; border-left: 3px solid var(--success);">
+      <span style="color: var(--success); font-size: 18px;">✓</span>
+      <strong>当前版本</strong>
+      <span style="margin-left: 8px; color: #555;">v2.7.0</span>
+    </div>
+    <div style="background: #fafbfc; padding: 10px 12px; border-radius: 4px; margin: 8px 0; border-left: 3px solid var(--success);">
+      <span style="color: var(--success); font-size: 18px;">✓</span>
+      <strong>备份目录</strong>
+      <span style="margin-left: 8px; color: #555;">/path/to/backups</span>
+    </div>
+    <div style="margin-top: 16px; text-align: right;">
+      <button class="btn btn-primary">🚀 一键升级</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- 第七章 -->
+<h1 class="chapter-title" id="ch7">第七章：常见问题 FAQ</h1>
+
+<h3>Q1：忘记密码怎么办？</h3>
+<p><strong>A</strong>：联系财务管理员重置密码。财务进入 <strong>👥 人员账号</strong> → 找到该用户 → <strong>改密</strong>。</p>
+
+<h3>Q2：单据被驳回后，找不到修改入口？</h3>
+<p><strong>A</strong>：进入 <strong>📋 我的报销单</strong> → 点击"财务驳回"或"稽核驳回"状态的行 → 详情页有 <strong>修改</strong> 按钮（或新建并复制内容）。</p>
+
+<!-- 第六章续：v2.8 调令 OCR / v2.9 离线 OCR / v2.10 客户端分发 + 模式 C -->
+<h1 class="chapter-title" id="ch8">第八章：v2.8 - v2.10.0d 新功能</h1>
+
+<h2>8.1 人员调令 OCR（v2.8.0）</h2>
+
+<p>稽核员/财务可上传"借调/跟班学习/实战练兵"等调令图片，系统通过 OCR 自动提取
+<strong>真实姓名 + 有效期 + 调令类型</strong>，绑定到报销员档案。</p>
+
+<div class="mockup">
+  <div class="mockup-title"><span>📑 调令识别 - audit001</span><span class="tag">v2.8.0</span></div>
+  <div class="app-window" style="padding: 20px;">
+    <h3>上传调令图片</h3>
+    <div style="background: #fff3cd; border-left: 3px solid var(--warning); padding: 12px; border-radius: 4px; margin: 12px 0;">
+      ℹ 支持 PDF/JPG/PNG。系统离线 OCR 引擎 <code>rapidocr_onnxruntime</code>（PaddleOCR v4 中文模型），1.6s/图，置信度 0.95+。
+    </div>
+    <div style="border: 2px dashed #ccc; padding: 40px; text-align: center; border-radius: 8px; margin: 12px 0;">
+      📁 拖拽文件到此处，或点击上传
+    </div>
+    <button class="btn btn-primary">📤 上传并识别</button>
+    <hr>
+    <h3>最近识别结果</h3>
+    <table class="data-table">
+      <thead><tr><th>姓名</th><th>调令类型</th><th>有效期</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>张三</td><td><span class="tag">借调</span></td><td>2026-08-01 → 2026-12-31</td><td><span class="tag tag-success">已绑定</span></td></tr>
+        <tr><td>李四</td><td><span class="tag">跟班学习</span></td><td>2026-07-15 → 2026-10-15</td><td><span class="tag">待绑定</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="info">
+  <strong>ℹ v2.8 调令模型字段</strong>：
+  <ul>
+    <li><code>real_name</code>：真实姓名（必填）</li>
+    <li><code>transfer_type</code>：调令类型（借调/跟班学习/实战练兵/其他）</li>
+    <li><code>start_date</code> / <code>end_date</code>：有效期（索引字段）</li>
+  </ul>
+  OCR 全离线，零外网依赖，模型内置 <code>ch_PP-OCRv4</code>。
+</div>
+
+
+<h2>8.2 OCR 全离线（v2.9.0）</h2>
+
+<p>报销票据 OCR 引擎从"模拟引擎"升级为 <code>rapidocr_onnxruntime</code>，PaddleOCR v4 中文模型，
+<strong>完全本地推理</strong>，不依赖任何外网 OCR API。</p>
+
+<div class="info">
+  <strong>ℹ v2.9 OCR 引擎升级</strong>：
+  <ul>
+    <li><strong>引擎</strong>：<code>rapidocr_onnxruntime</code>（替代 v2.7 的 mock）</li>
+    <li><strong>模型</strong>：<code>ch_PP-OCRv4_det</code> + <code>ch_PP-OCRv4_rec</code></li>
+    <li><strong>性能</strong>：~1.6s/图，置信度 0.95+</li>
+    <li><strong>降级</strong>：rapidocr 不可用时自动 fallback 到 mock（保证测试不挂）</li>
+    <li><strong>部署</strong>：模型文件内置在 <code>python/Lib/site-packages/rapidocr_onnxruntime/models/</code></li>
+  </ul>
+</div>
+
+
+<h2>8.3 客户端自动打包 + 多级数据下放（v2.10.0）</h2>
+
+<p>财务可一键生成"稽核员专用客户端"和"报销员专用客户端"分发包，系统按角色
+<strong>裁剪数据</strong>（只保留该角色可见的表/行），最终用户得到一个独立可运行
+的 zip，解压即用。</p>
+
+<div class="flow-chart">
+<pre>
+[财务端] → 选用户 → [📦 下发稽核员端 / 下发报销员端]
+            ↓
+    ┌───────────────────────────┐
+    │ 数据裁剪（SQL DELETE）    │
+    │ 1. 删除其他用户的 sys_user│
+    │ 2. 删除无关的报销单       │
+    │ 3. 删除超出范围的代理关系 │
+    └───────────────────────────┘
+            ↓
+    ┌───────────────────────────┐
+    │ 模板复制（zip 打包）      │
+    │ 1. 复制 windows_green 模板│
+    │ 2. 替换裁剪后的 db        │
+    │ 3. 生成 {role}_{uid}_{ts} │
+    └───────────────────────────┘
+            ↓
+    [download URL 给用户]
+</pre>
+</div>
+
+<h3>客户端分发路由</h3>
+<table>
+<thead><tr><th>路由</th><th>方法</th><th>权限</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>/api/distribution/build/auditor/&lt;id&gt;</code></td><td>POST</td><td>财务</td><td>生成稽核员客户端</td></tr>
+<tr><td><code>/api/distribution/build/reimburser/&lt;id&gt;</code></td><td>POST</td><td>财务</td><td>生成报销员客户端（模式 C 拦截）</td></tr>
+<tr><td><code>/api/distribution/build/finance</code></td><td>POST</td><td>财务</td><td>生成财务客户端</td></tr>
+<tr><td><code>/api/distribution/download/&lt;id&gt;</code></td><td>GET</td><td>财务</td><td>下载已生成的客户端</td></tr>
+<tr><td><code>/api/distribution/list</code></td><td>GET</td><td>财务</td><td>已生成的客户端列表</td></tr>
+<tr><td><code>/api/distribution/check-reimburser/&lt;id&gt;</code></td><td>GET</td><td>财务/稽核员</td><td>检查报销员部署模式</td></tr>
+</tbody>
+</table>
+
+<div class="warning">
+  <strong>⚠ 模式 C 拦截</strong>：报销员处于 <code>agent_c</code> 模式（完全被代理）时，
+  单独生成客户端会被拦截（无需客户端，由稽核员代办）。
+</div>
+
+
+<h2>8.4 模式 C 混合部署（v2.10.0c / v2.10.0d）</h2>
+
+<p>模式 C = 部分报销员由稽核员全权代办，其他报销员自助登录。
+核心机制：复用 <code>agent_auth</code> 表（不引入新字段），有 active 关系 = 模式 C。</p>
+
+<h3>模式 C 端到端工作流</h3>
+<ol>
+  <li><strong>财务创建项目</strong>（自动绑报销员到 user_project）</li>
+  <li><strong>财务/稽核员</strong>进"项目台账" → 选项目 → <strong>[🤝 代填]</strong> 按钮</li>
+  <li>选稽核员 + 选报销员 → 建立 <code>agent_auth</code></li>
+  <li>报销员 <code>mode-c-status</code> 自动从 <code>self</code> 变 <code>agent_c</code></li>
+  <li>客户端分发自动跳过该报销员（提示"完全模式 C"）</li>
+  <li>稽核员端"考勤"视图能选代填对象</li>
+  <li>报销员状态变化通知自动抄送稽核员（标题前缀"代 [姓名]"）</li>
+</ol>
+
+
+<h3>Q3：大额报销（≥ 10 万）我登录了为什么看不到"双签"菜单？</h3>
+<p><strong>A</strong>：双签只对<strong>第二签人</strong>显示。你是主财务，应该用"主财务 approve"流程：</p>
+<ol>
+  <li>终审工作台 → 选大额单据 → 终审通过</li>
+  <li>系统会要求你选第二签人</li>
+  <li>选完后单据进入"待双签"状态，由第二签人在他自己的客户端审批</li>
+</ol>
+
+<h3>Q4：OCR 票据识别返回的是空字段？</h3>
+<p><strong>A</strong>：当前使用<strong>模拟 OCR 引擎</strong>。要真实识别：</p>
+<ol>
+  <li>部署时配置 <code>BAIDU_OCR_TOKEN</code>（百度 OCR API 密钥）</li>
+  <li>或部署 Tesseract + 中文模型</li>
+  <li>启用 <code>services/ocr_service.py</code> 中的 <code>baidu_ocr</code> 函数</li>
+</ol>
+
+<h3>Q5：升级失败怎么办？</h3>
+<ol>
+  <li>系统会自动备份到 <code>backups/pre_upgrade_{version}_{ts}.db</code></li>
+  <li>升级失败时显示错误日志</li>
+  <li>手动恢复：停服务 → 备份文件覆盖 <code>reimbursement.db</code> → 启动</li>
+</ol>
+
+<h3>Q6：客户端连不上中心节点？</h3>
+<ol>
+  <li>检查中心节点（财务客户端）是否启动</li>
+  <li>检查防火墙是否放行 5443 端口</li>
+  <li>检查 <code>sys_config.center_node_host</code> 配置</li>
+</ol>
+
+<h3>Q7：附件上传失败？</h3>
+<ul>
+  <li>单个文件最大 50MB</li>
+  <li>格式：jpg / png / pdf / bmp / gif</li>
+  <li>检查 <code>uploads/</code> 目录权限</li>
+</ul>
+
+<h3>Q8：为什么我的角色登录到了不同的客户端被拒绝？</h3>
+<p><strong>A</strong>：<strong>O12 决策</strong> — 客户端类型与角色严格绑定：</p>
+<ul>
+  <li><code>admin</code> / <code>finance_*</code> → 财务客户端</li>
+  <li><code>audit_*</code> → 稽核员客户端</li>
+  <li><code>reimb_*</code> → 报销人客户端</li>
+</ul>
+<p>如需切换角色，请联系财务管理员调整。</p>
+
+<h3>Q9：日志在哪里看？</h3>
+<ul>
+  <li>桌面应用日志：<code>logs/</code> 目录</li>
+  <li>启动日志：每次启动时 <code>logs/launch_{ts}.log</code></li>
+  <li>错误日志：菜单 <strong>📜 审计日志</strong> 或 <code>error_log</code> 表</li>
+</ul>
+
+<h3>Q10：怎么备份数据？</h3>
+<ul>
+  <li><strong>手动备份</strong>：复制 <code>reimbursement.db</code> 文件</li>
+  <li><strong>自动备份</strong>：升级向导会备份</li>
+  <li><strong>定时备份</strong>：可用 <code>crontab</code>：
+    <pre>0 2 * * * cp /path/to/reimbursement.db /backup/reimburse_$(date +\%Y\%m\%d).db</pre>
+  </li>
+</ul>
+
+
+<!-- 附录 A -->
+<h1 class="chapter-title" id="appA">附录 A：完整功能矩阵</h1>
+
+<table>
+<thead>
+<tr><th>#</th><th>功能</th><th>报销人</th><th>稽核员</th><th>财务</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>创建报销单</td><td>✓</td><td>✓（代填）</td><td>—</td></tr>
+<tr><td>2</td><td>初审单据</td><td>—</td><td>✓</td><td>—</td></tr>
+<tr><td>3</td><td>终审单据</td><td>—</td><td>—</td><td>✓</td></tr>
+<tr><td>4</td><td>双签（大额）</td><td>—</td><td>—</td><td>✓</td></tr>
+<tr><td>5</td><td>Override 强制修改</td><td>—</td><td>—</td><td>✓</td></tr>
+<tr><td>6</td><td>决策链</td><td>✓（仅自己）</td><td>✓（相关）</td><td>✓</td></tr>
+<tr><td>7</td><td>操作回放</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>8</td><td>通知中心</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>9</td><td>数据导入</td><td>—</td><td>—</td><td>✓</td></tr>
+<tr><td>10</td><td>数据导出</td><td>—</td><td>—</td><td>✓</td></tr>
+<tr><td>11</td><td>数据字典</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>12</td><td>可视化大屏</td><td>—</td><td>—</td><td>✓</td></tr>
+<tr><td>13</td><td>报表 Excel/PDF</td><td>—</td><td>—</td><td>✓</td></tr>
+<tr><td>14</td><td>OCR 票据识别</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>15</td><td>应用内升级</td><td>—</td><td>—</td><td>✓</td></tr>
+<tr><td>16</td><td>数据包交换</td><td>✓</td><td>✓</td><td>✓</td></tr>
+<tr><td>17</td><td>中心节点同步</td><td>✓</td><td>✓</td><td>✓（作为中心）</td></tr>
+<tr><td>18</td><td>终审独立审计</td><td>—</td><td>—</td><td>✓</td></tr>
+<tr><td>19</td><td>操作日志</td><td>—</td><td>✓（自己）</td><td>✓（自己）</td></tr>
+<tr><td>20</td><td>通知模板管理</td><td>—</td><td>—</td><td>✓</td></tr>
+</tbody>
+</table>
+
+<!-- 附录 B -->
+<h1 class="chapter-title" id="appB">附录 B：默认账号速查</h1>
+
+<table>
+<thead>
+<tr><th>客户端</th><th>用户名</th><th>密码</th><th>角色</th></tr>
+</thead>
+<tbody>
+<tr><td>财务版</td><td><code>admin</code></td><td><code>NewP@ss123</code></td><td><span class="role-tag finance">财务（管理员）</span></td></tr>
+<tr><td>稽核员版</td><td><code>audit001</code></td><td><code>Audit@001!</code></td><td><span class="role-tag auditor">稽核员</span></td></tr>
+<tr><td>报销人版</td><td><code>reimb001</code></td><td><code>Reimb@001!</code></td><td><span class="role-tag reimburser">报销人</span></td></tr>
+</tbody>
+</table>
+
+<div class="warning">
+  <strong>⚠ 首次登录强制改密</strong>。生产环境部署后立即修改！
+</div>
+
+<!-- 附录 C -->
+<h1 class="chapter-title" id="appC">附录 C：快捷键</h1>
+
+<table>
+<thead>
+<tr><th>快捷键</th><th>功能</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Ctrl + N</code></td><td>新建报销单（报销人）</td></tr>
+<tr><td><code>Ctrl + S</code></td><td>保存草稿</td></tr>
+<tr><td><code>Ctrl + Enter</code></td><td>提交</td></tr>
+<tr><td><code>Esc</code></td><td>关闭弹窗</td></tr>
+<tr><td><code>F5</code></td><td>刷新当前页</td></tr>
+</tbody>
+</table>
+
+<!-- 附录 D -->
+<h1 class="chapter-title" id="appD">附录 D：版本历史</h1>
+
+<table>
+<thead>
+<tr><th>版本</th><th>发布日期</th><th>关键功能</th></tr>
+</thead>
+<tbody>
+<tr><td><span class="badge badge-primary">v1.0.0</span></td><td>2026-08-20</td><td>T0-T5 全链路</td></tr>
+<tr><td><span class="badge badge-primary">v1.1.0</span></td><td>2026-08-21</td><td>附件上传 + 项目总账</td></tr>
+<tr><td><span class="badge badge-primary">v1.2.0</span></td><td>2026-08-21</td><td>N1 AES-256 加密</td></tr>
+<tr><td><span class="badge badge-primary">v1.3.0</span></td><td>2026-08-22</td><td>O2 限速 + O5 会话</td></tr>
+<tr><td><span class="badge badge-primary">v2.0.0</span></td><td>2026-08-22</td><td>D3 终审独立审计</td></tr>
+<tr><td><span class="badge badge-primary">v2.1.0</span></td><td>2026-08-23</td><td>D3 真双签</td></tr>
+<tr><td><span class="badge badge-primary">v2.2.0</span></td><td>2026-08-24</td><td>公告/通知系统</td></tr>
+<tr><td><span class="badge badge-primary">v2.3.0</span></td><td>2026-08-25</td><td>数据导入向导</td></tr>
+<tr><td><span class="badge badge-primary">v2.4.0</span></td><td>2026-08-25</td><td>应用内升级向导</td></tr>
+<tr><td><span class="badge badge-primary">v2.5.0</span></td><td>2026-08-25</td><td>数据字典 + 报表 PDF + 操作回放</td></tr>
+<tr><td><span class="badge badge-primary">v2.6.0</span></td><td>2026-08-25</td><td>数据导出 + 可视化大屏</td></tr>
+<tr><td><span class="badge badge-primary">v2.7.0</span></td><td>2026-08-25</td><td>OCR 票据识别框架</td></tr>
+<tr><td><span class="badge badge-success">v2.8.0</span></td><td>2026-08-25</td><td>人员调令 OCR（27 号表）</td></tr>
+<tr><td><span class="badge badge-success">v2.9.0</span></td><td>2026-08-25</td><td>OCR 全离线（rapidocr_onnxruntime）</td></tr>
+<tr><td><span class="badge badge-success">v2.10.0</span></td><td>2026-08-25</td><td>客户端自动打包 + 多级数据下放</td></tr>
+<tr><td><span class="badge badge-success">v2.10.0c</span></td><td>2026-08-25</td><td>模式 C 混合部署（agent_auth 复用）</td></tr>
+<tr><td><span class="badge badge-warning">v2.10.0d</span></td><td>2026-08-25</td><td>角色职责明确 + 考勤审批流程 + 代理权限分级</td></tr>
+</tbody>
+</table>
+
+<hr style="margin: 40px 0;">
+
+<p style="text-align: center; color: #7f8c8d; font-size: 12px;">
+  <strong>文档版本</strong>：v2.10.0d ｜ <strong>最后更新</strong>：2026-08-25 ｜ <strong>维护</strong>：Mavis Agent<br/>
+  <a href="https://github.com/hellomerry/baox_new" style="color: var(--accent);">GitHub</a> ·
+  <a href="http://192.168.2.188:3000/marc/bx_new" style="color: var(--accent);">LAN Gitea</a>
+</p>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+# Dependabot 配置
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+
+updates:
+  # ============= Python 依赖（requirements.txt） =============
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Shanghai"
+    # 一次 PR 不要超过 5 个，避免大爆炸
+    open-pull-requests-limit: 5
+    # 自动分组：所有 pip 更新到一个 PR
+    groups:
+      flask:
+        patterns: ["Flask", "Flask-SQLAlchemy", "Werkzeug", "Jinja2", "itsdangerous", "MarkupSafe", "click"]
+      desktop:
+        patterns: ["pywebview", "pyinstaller"]
+      crypto:
+        patterns: ["cryptography"]
+      db:
+        patterns: ["SQLAlchemy", "greenlet"]
+      report:
+        patterns: ["reportlab", "xlsxwriter"]
+      testing:
+        patterns: ["pytest", "pytest-flask", "requests", "flask-limiter"]
+    # 提交者信息
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps(dev)"
+      include: "scope"
+    # PR 标签
+    labels:
+      - "dependencies"
+      - "python"
+    # 自动 rebase
+    rebase-strategy: "auto"
+    # 不自动 merge（需要人工 review）
+    # 但允许 GitHub 自动 squash
+    # 允许自动 rebase 兼容变更
+
+  # ============= GitHub Actions 版本 =============
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:00"
+      timezone: "Asia/Shanghai"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "ci"
+    rebase-strategy: "auto"
+    # 关注的 action
+    # - actions/checkout
+    # - actions/setup-python
+    # - actions/upload-artifact
+    # - actions/download-artifact
+    # - softprops/action-gh-release

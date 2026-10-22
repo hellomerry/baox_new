@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}报销稽核系统{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="app-layout">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-title">
+                {% block sidebar_title %}{{ client_type|title }}版{% endblock %}
+            </div>
+            <nav id="sidebar-menu">
+                {% block menu_items %}{% endblock %}
+            </nav>
+        </aside>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶栏 -->
+            <header class="topbar">
+                <div class="page-title">{% block page_title %}{% endblock %}</div>
+                <div class="user-info">
+                    <span id="current-user"></span>
+                    <a class="notification-bell" href="#" onclick="App.navigate('notifications'); return false;" title="通知中心">
+                        🔔 <span id="topbar-unread" class="unread-badge" style="display: none;">0</span>
+                    </a>
+                    <button class="btn btn-sm" onclick="window.location.href='/help'">帮助</button>
+                    <button class="btn btn-sm" onclick="logout()">退出</button>
+                </div>
+            </header>
+
+            <!-- 内容 -->
+            <main class="content">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function logout() {
+            fetch('/api/auth/logout').then(() => window.location.href = '/');
+        }
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

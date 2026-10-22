@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  test-linux:
+    name: Test (Ubuntu 22.04)
+    runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install system dependencies (pywebview + GTK for headless test)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-0 libwebkit2gtk-4.1-0 libsoup-3.0-0 \
+                                    libnotify4 libxss1 libxtst6 libatspi2.0-0
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/
+          pip install pytest pytest-flask xlsxwriter --break-system-packages \
+              -i https://pypi.tuna.tsinghua.edu.cn/simple/
+
+      - name: Run pytest
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m pytest tests/ -v --tb=short --maxfail=5
+
+      - name: Upload coverage (if available)
+        if: always()
+        continue-on-error: true
+        run: |
+          pip install coverage pytest-cov --break-system-packages \
+              -i https://pypi.tuna.tsinghua.edu.cn/simple/
+          PYTHONPATH=. python -m pytest tests/ --cov=. --cov-report=xml --cov-report=html
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.python-version }}
+          path: |
+            htmlcov/
+            .coverage
+          retention-days: 7
+          if-no-files-found: ignore
+
+  lint:
+    name: Lint (pyflakes + syntax check)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Syntax check
+        run: |
+          python -m compileall -q services/ routes/ utils/ models/ migrations/ tests/ 2>&1 | head -20
+      - name: pyflakes
+        run: |
+          pip install pyflakes --break-system-packages -i https://pypi.tuna.tsinghua.edu.cn/simple/
+          python -m pyflakes services/ routes/ utils/ models/ migrations/ || true
