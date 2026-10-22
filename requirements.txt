@@ -22,9 +22,9 @@ SQLAlchemy>=2.0,<3.0
 greenlet>=3.0,<4.0
 
 # 报表
-reportlab>=4.0,<5.0
+reportlab>=5.0.1,<6.0
 python-docx>=1.1,<2.0  # utils/word_export.py 制式单据 Word 导出
-xlsxwriter>=3.1,<4.0
+xlsxwriter>=3.2.9,<4.0
 openpyxl>=3.1,<4.0  # utils/excel_import.py 数据导入向导依赖
 
 # OCR — 离线本地引擎（rapidocr_onnxruntime）
