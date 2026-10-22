@@ -115,6 +115,14 @@ def _repeat_header(row):
         trPr.append(parse_xml(f'<w:tblHeader {nsdecls("w")}/>'))
 
 
+def _row_keep_next(row):
+    """表头行与下一行同页（单元格内所有段落设 keepNext + 段中不分页）"""
+    for cell in row.cells:
+        for p in cell.paragraphs:
+            p.paragraph_format.keep_with_next = True
+            p.paragraph_format.keep_together = True
+
+
 def _no_spacing(p):
     """去掉段前段后间距，制式表格更紧凑"""
     p.paragraph_format.space_before = Pt(0)
@@ -133,11 +141,13 @@ def _title(doc, text):
 
 
 def _section_heading(doc, text):
-    """表格之间的小节标题（黑体左对齐）"""
+    """表格之间的小节标题（黑体左对齐，与后续表格同页）"""
     p = doc.add_paragraph()
     _no_spacing(p)
     p.paragraph_format.space_before = Pt(4)
     p.paragraph_format.space_after = Pt(2)
+    p.paragraph_format.keep_with_next = True
+    p.paragraph_format.keep_together = True
     run = p.add_run(text)
     _set_run_font(run, FONT_TITLE, 12, bold=True)
     return p
@@ -256,6 +266,7 @@ def generate_bill_docx(bill, items, project, user, auditor, finance_auditor,
     header = t.rows[0]
     _set_row_height(header, 0.75)
     _row_cant_split(header)
+    _row_keep_next(header)
     for cell, text in zip(header.cells,
                           ['费用项目', '交通费', '住宿费', '伙食补助费', '其他', '合计']):
         _cell_text(cell, text, bold=True)
@@ -297,6 +308,7 @@ def generate_bill_docx(bill, items, project, user, auditor, finance_auditor,
         _set_row_height(head, 0.6)
         _row_cant_split(head)
         _repeat_header(head)
+        _row_keep_next(head)
         for cell, text in zip(head.cells,
                               ['序号', '费用日期', '费用类型', '金额（元）', '说明']):
             _cell_text(cell, text, bold=True)
@@ -321,6 +333,7 @@ def generate_bill_docx(bill, items, project, user, auditor, finance_auditor,
     head = t.rows[0]
     _set_row_height(head, 0.6)
     _row_cant_split(head)
+    _row_keep_next(head)
     for cell, text in zip(head.cells, ['审核环节', '审核意见', '签字人', '日期']):
         _cell_text(cell, text, bold=True)
 
@@ -354,6 +367,7 @@ def generate_bill_docx(bill, items, project, user, auditor, finance_auditor,
     head = t.rows[0]
     _set_row_height(head, 0.6)
     _row_cant_split(head)
+    _row_keep_next(head)
     for cell, text in zip(head.cells, ['报销人签字', '稽核员签字', '财务负责人签字', '领款人签字']):
         _cell_text(cell, text, bold=True)
 
