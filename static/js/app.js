@@ -353,7 +353,7 @@ const App = {
             `;
         }
 
-        // 所有角色都能：导出 PDF / 上传附件 / 查看附件
+        // 所有角色都能：导出 PDF/Word / 上传附件 / 查看附件
         let financeActions = '';
         if (role === 'finance' && (b.status === 'archived' || b.status === 'approved') && !b.red_rushed) {
             financeActions = `<button class="btn btn-danger" onclick="App.doRedRush(${billId})">🔁 冲红</button>`;
@@ -385,6 +385,7 @@ const App = {
         const alwaysHtml = `
             <div class="action-buttons">
                 <a class="btn btn-primary" href="/api/bills/${billId}/pdf" target="_blank">📄 导出 PDF</a>
+                <a class="btn btn-primary" href="/api/bills/${billId}/docx" target="_blank">📝 导出 Word</a>
                 <button class="btn" onclick="App.showUploadDialog(${billId})">📎 上传附件</button>
                 <button class="btn" onclick="App.showAttachments(${billId})">📂 查看附件</button>
                 <button class="btn" onclick="App._viewDecisionChain(${billId})">🔍 查看决策链</button>

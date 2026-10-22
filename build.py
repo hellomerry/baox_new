@@ -75,6 +75,7 @@ def build_one(client_type: str):
         'reportlab.pdfbase.cidfonts',
         'reportlab.pdfbase._fontdata',
         'reportlab.platypus',
+        'docx',
         'bottle',
         'bottle_websocket',
         'pyparsing',

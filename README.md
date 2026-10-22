@@ -84,7 +84,7 @@ reimbursement-app/
 | 后端 | Flask 3.1 + SQLAlchemy 2 + SQLite | 严格不用 FastAPI |
 | 桌面壳 | PyWebView 6.2 | 跨平台，无需 Electron |
 | 加密 | cryptography | AES-256-CBC + Scrypt 派生 |
-| 报表 | reportlab | PDF 导出（STSong-Light 中文字体） |
+| 报表 | reportlab / python-docx | PDF 导出（STSong-Light 中文字体）+ Word 制式单据导出（黑体/宋体） |
 | 打包 | PyInstaller 6 | 三客户端独立 .exe |
 | 前端 | 原生 HTML / JS / CSS | **不用 Vue/React** |
 | 测试 | pytest 9 + pytest-flask | live_url 走真实 HTTP 避免 session 共享问题 |

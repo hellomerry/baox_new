@@ -23,6 +23,7 @@ greenlet>=3.0,<4.0
 
 # 报表
 reportlab>=4.0,<5.0
+python-docx>=1.1,<2.0  # utils/word_export.py 制式单据 Word 导出
 xlsxwriter>=3.1,<4.0
 openpyxl>=3.1,<4.0  # utils/excel_import.py 数据导入向导依赖
 

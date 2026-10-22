@@ -420,6 +420,44 @@ def export_bill_pdf(bill_id):
     )
 
 
+@bills_bp.route('/<int:bill_id>/docx')
+@login_required
+def export_bill_docx(bill_id):
+    """导出报销单 Word（制式）"""
+    from utils.word_export import generate_bill_docx
+    from config import Config
+
+    bill = ExpenseBill.query.get(bill_id)
+    if not bill:
+        return jsonify({'code': 1, 'message': '报销单不存在'}), 404
+
+    items = ExpenseBillItem.query.filter_by(bill_id=bill_id).all()
+    user = SysUser.query.get(bill.user_id) if bill.user_id else None
+    project = ExpenseProject.query.get(bill.project_id)
+    auditor = SysUser.query.get(bill.auditor_id) if bill.auditor_id else None
+    finance_auditor = SysUser.query.get(bill.finance_auditor_id) if bill.finance_auditor_id else None
+    dual_signer = SysUser.query.get(bill.finance_dual_signer_id) if bill.finance_dual_signer_id else None
+
+    # 存到临时目录
+    docx_dir = str(Config.BASE_DIR / 'rbag_temp' / 'docx')
+    os.makedirs(docx_dir, exist_ok=True)
+    safe_no = bill.bill_no.replace('/', '_')
+    out_path = os.path.join(docx_dir, f'{safe_no}.docx')
+
+    try:
+        generate_bill_docx(bill, items, project, user, auditor, finance_auditor,
+                           out_path, dual_signer=dual_signer)
+    except Exception as e:
+        return jsonify({'code': 500, 'message': f'Word 生成失败: {e}'}), 500
+
+    return send_file(
+        out_path,
+        mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        as_attachment=True,
+        download_name=f'{safe_no}.docx',
+    )
+
+
 @bills_bp.route('/ping')
 def ping():
     return jsonify({'msg': 'bills blueprint ready'})
