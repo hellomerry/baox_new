@@ -28,6 +28,13 @@ from datetime import datetime
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 
+# Windows GBK 兜底（必须在其他 print 之前，避免 ✓/⚠/❌ 触发 UnicodeEncodeError）
+try:
+    from utils.setup_stdout import setup_safe_stdout
+    setup_safe_stdout()
+except Exception:
+    pass
+
 from sqlalchemy import inspect, create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 

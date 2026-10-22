@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}报销稽核系统 - {{ client_type }}版{% endblock %}
+{% block title %}报销稽核系统{% if access_mode == 'web' %}（Web 访问）{% else %} - {{ client_type }}版{% endif %}{% endblock %}
 
 {% block content %}
 <div class="dashboard-container" id="app">
@@ -8,7 +8,14 @@
     <div id="login-view" class="view login-view" style="display: none;">
         <div class="login-box card">
             <h1 class="login-title">报销稽核系统</h1>
-            <p class="login-subtitle">{{ client_type }}版</p>
+            <p class="login-subtitle">
+                {% if access_mode == 'web' %}
+                    <span class="badge badge-info">Web 访问模式</span>
+                    <small class="text-muted">（同网段浏览器访问，角色：财务 / 稽核员 / 报销人）</small>
+                {% else %}
+                    {{ client_type }}版
+                {% endif %}
+            </p>
             <form id="login-form" onsubmit="return App.handleLogin(event)">
                 <div class="form-group">
                     <label>账号</label>
@@ -38,5 +45,12 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+    // v2.10.0e：注入访问模式供前端 app.js 读取
+    window.APP_CONFIG = {
+        accessMode: {{ access_mode|tojson }},
+        clientType: {{ client_type|tojson }}
+    };
+</script>
 <script src="/static/js/app.js"></script>
 {% endblock %}

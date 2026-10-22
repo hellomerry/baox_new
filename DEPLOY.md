@@ -1,4 +1,4 @@
-# 部署说明（v2.10.0d）
+# 部署说明（v2.11.0）
 
 > 报销稽核系统部署全流程速查 — 财务 / 稽核员 / 报销员三客户端
 > 详细子文档：[docs/deploy/Windows打包指南.md](./docs/deploy/Windows打包指南.md) · [docs/deploy/信创部署指南.md](./docs/deploy/信创部署指南.md)

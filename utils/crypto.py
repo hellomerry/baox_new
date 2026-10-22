@@ -4,6 +4,16 @@
 - AES-256-CBC 加解密（N1/N2 用）
 - 敏感字段加解密（带 base64 编码，存数据库）
 """
+import sys
+# Windows GBK 兜底
+for _name in ('stdout', 'stderr'):
+    _stream = getattr(sys, _name, None)
+    if _stream is not None:
+        try:
+            _stream.reconfigure(encoding='utf-8', errors='replace')
+        except Exception:
+            pass
+
 import hashlib
 import os
 import json

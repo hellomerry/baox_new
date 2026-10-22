@@ -3,6 +3,16 @@
 - 每日自动备份到 backup/ 目录
 - 保留最近 30 份
 """
+import sys
+# Windows GBK 兜底
+for _name in ('stdout', 'stderr'):
+    _stream = getattr(sys, _name, None)
+    if _stream is not None:
+        try:
+            _stream.reconfigure(encoding='utf-8', errors='replace')
+        except Exception:
+            pass
+
 import os
 import shutil
 import hashlib

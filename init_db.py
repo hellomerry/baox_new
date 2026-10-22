@@ -20,6 +20,13 @@ from flask import Flask
 _app_dir = os.path.dirname(os.path.abspath(__file__))
 if _app_dir not in sys.path:
     sys.path.insert(0, _app_dir)
+
+# Windows GBK 兜底（必须在其他 print 之前）
+try:
+    from utils.setup_stdout import setup_safe_stdout
+    setup_safe_stdout()
+except Exception:
+    pass
 if os.getcwd() not in sys.path:
     sys.path.insert(0, os.getcwd())
 

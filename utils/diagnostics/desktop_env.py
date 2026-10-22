@@ -9,6 +9,15 @@ import subprocess
 import platform
 from pathlib import Path
 
+# Windows GBK 兜底
+for _name in ('stdout', 'stderr'):
+    _stream = getattr(sys, _name, None)
+    if _stream is not None:
+        try:
+            _stream.reconfigure(encoding='utf-8', errors='replace')
+        except Exception:
+            pass
+
 
 # ============= 各平台必检库 =============
 DESKTOP_DEPS = {

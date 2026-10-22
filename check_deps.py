@@ -13,8 +13,17 @@
 
 设计：纯 Python 3 标准库 + subprocess，不依赖打包产物
 """
-import os
 import sys
+# Windows GBK 兜底（避免 ✓/⚠/❌ 触发 UnicodeEncodeError）
+for _name in ('stdout', 'stderr'):
+    _stream = getattr(sys, _name, None)
+    if _stream is not None:
+        try:
+            _stream.reconfigure(encoding='utf-8', errors='replace')
+        except Exception:
+            pass
+
+import os
 import subprocess
 import platform
 from pathlib import Path

@@ -65,11 +65,37 @@ def login():
     if not username or not password:
         return jsonify({'code': 1, 'message': '用户名和密码必填'}), 400
 
-    # 1. 客户端类型与账号角色校验（测试模式下跳过：client_type='*'）
+    # 1. 客户端类型与账号角色校验（测试模式跳过 client_type='*'）
+    # v2.10.0e 新增：web 模式下根据 WEB_ALLOWED_ROLES 白名单校验，跳过 O12 绑定
     client_type = current_app.config.get('CLIENT_TYPE')
+    web_allowed_roles = current_app.config.get('WEB_ALLOWED_ROLES', [])
     user_by_name = SysUser.query.filter_by(username=username).first()
-    if client_type != '*' and user_by_name and ROLE_TO_CLIENT.get(user_by_name.role) != client_type:
-        # 记录异常登录尝试
+
+    if client_type == 'web':
+        # Web 模式：按白名单校验（空列表 = 全部禁止）
+        if web_allowed_roles and user_by_name and user_by_name.role not in web_allowed_roles:
+            try:
+                log = AuditLog(
+                    actor_id=user_by_name.id,
+                    actor_role=user_by_name.role,
+                    action='LOGIN_WEB_ROLE_NOT_ALLOWED',
+                    detail=json.dumps({
+                        'client_type': client_type,
+                        'user_role': user_by_name.role,
+                        'allowed_roles': web_allowed_roles,
+                    }, ensure_ascii=False),
+                    ip_address=request.remote_addr,
+                )
+                db.session.add(log)
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
+            return jsonify({
+                'code': 1,
+                'message': f'Web 访问不允许该角色登录（{user_by_name.role}）'
+            }), 403
+    elif client_type != '*' and user_by_name and ROLE_TO_CLIENT.get(user_by_name.role) != client_type:
+        # 桌面客户端：保留 O12 客户端-角色绑定
         try:
             log = AuditLog(
                 actor_id=user_by_name.id,

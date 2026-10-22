@@ -4,6 +4,16 @@ PDF 单据导出工具
 - 中文支持（用 CID 字体）
 - 大写金额 / 审批流程 / 明细表
 """
+import sys
+# Windows GBK 兜底
+for _name in ('stdout', 'stderr'):
+    _stream = getattr(sys, _name, None)
+    if _stream is not None:
+        try:
+            _stream.reconfigure(encoding='utf-8', errors='replace')
+        except Exception:
+            pass
+
 import os
 from datetime import datetime
 from decimal import Decimal

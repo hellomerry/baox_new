@@ -65,6 +65,17 @@ class Config:
     CENTER_NODE_HOST = os.environ.get('CENTER_NODE_HOST', '127.0.0.1')
     CENTER_NODE_PORT = int(os.environ.get('CENTER_NODE_PORT', '5443'))
 
+    # === Web 模式（v2.10.0e 新增）===
+    # 财务端 launcher 默认同时启桌面 + Web，让同网段用户能用浏览器访问
+    WEB_ENABLED = os.environ.get('WEB_ENABLED', 'true').lower() == 'true'
+    WEB_HOST = os.environ.get('WEB_HOST', '0.0.0.0')  # 监听所有网卡
+    WEB_PORT = int(os.environ.get('WEB_PORT', '5443'))
+    WEB_REQUIRE_HTTPS = os.environ.get('WEB_REQUIRE_HTTPS', 'true').lower() == 'true'
+    WEB_ALLOWED_ROLES = os.environ.get(
+        'WEB_ALLOWED_ROLES', 'finance,auditor,reimburser'
+    ).split(',')  # web 模式登录允许的角色（空列表 = 全部禁止）
+    WEB_CORS_ORIGINS = os.environ.get('WEB_CORS_ORIGINS', '*')  # 跨域白名单
+
 
 class ProductionConfig(Config):
     """O12 决策：生产环境配置加固"""

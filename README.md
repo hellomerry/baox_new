@@ -30,7 +30,7 @@
 - 🛡️ **等保二级**：AES-256 字段加密、Scrypt 派生、登录限速、审计日志
 - 💻 **信创兼容**：Python 3.11 + PyWebView，可在麒麟 V10/UOS/Windows 部署
 - 📦 **PyInstaller 打包**：三个客户端独立打包，无需安装 Python 环境即可运行
-- 🧪 **测试覆盖**：69 个 pytest 用例覆盖认证/单据/附件/包/审计核心链路
+- 🧪 **测试覆盖**：284 个 pytest 用例覆盖认证/单据/附件/包/审计/OCR/代理/通知/决策链/导入导出核心链路
 
 ---
 
@@ -58,14 +58,24 @@ reimbursement-app/
 │   └── dashboard.html         # 三客户端共用 SPA 入口（role-based 切换）
 ├── static/                    # app.js (38KB), style.css (9.5KB)
 │
-├── tests/                     # 69 个 pytest 用例
-│   ├── conftest.py            # fixtures：app, live_url, admin_user, project
-│   ├── test_auth.py           # 14 个认证测试
-│   ├── test_bills.py          # 15 个单据流转测试
+├── tests/                     # 284 个 pytest 用例
+│   ├── conftest.py            # fixtures：app, live_url, admin_user, project, auditor, reimburser
+│   ├── test_transfer_ocr.py   # 61 个 OCR 识别/摆渡测试
+│   ├── test_bills.py          # 25 个单据流转测试
+│   ├── test_agents_api.py     # 20 个代理关系测试
+│   ├── test_data_import.py    # 18 个数据导入测试
+│   ├── test_client_distribution.py  # 18 个客户端分发测试
 │   ├── test_rbag.py           # 16 个 .rbag 包测试
-│   ├── test_attachments.py    # 6 个附件测试
-│   ├── test_packages.py       # 6 个包路由测试
-│   └── test_validators.py     # 12 个验证器单元测试
+│   ├── test_notifications.py  # 16 个通知测试
+│   ├── test_auth.py           # 14 个认证测试
+│   ├── test_research_audit.py # 13 个稽核研究测试
+│   ├── test_agent_full_mode.py  # 13 个代理全流程测试
+│   ├── test_validators.py     # 12 个验证器单元测试
+│   ├── test_upgrade.py        # 12 个升级/版本测试
+│   ├── test_decision_chain.py # 12 个决策链测试
+│   ├── test_excel_export.py   # 10 个 Excel 导出测试
+│   ├── test_word_export.py    # 7 个 Word 制式单据导出测试
+│   └── …（packages/attachments/encrypt 等共 11 个）
 │
 ├── uploads/bill_<id>/         # 附件存储（按 bill_id 分目录）
 ├── backup/                    # 自动备份目录（启动时滚动）
@@ -293,6 +303,7 @@ PYTHONPATH=. python3 -m pytest tests/ --cov=. --cov-report=html
 
 ## 十一、版本与变更
 
+- **v2.11.0** (2026-10-22) — 合入 v2.10.0e（财务端桌面+Web 双模式、Windows GBK 编码修复）+ 报销单 Word 制式单据导出，284 用例全过
 - **v1.0** (T0→T5 + 加固) — 核心链路完成，69 用例通过
 - 决策文档：88+ 条（A-P 系列）保存在 `docs/decisions/`
 

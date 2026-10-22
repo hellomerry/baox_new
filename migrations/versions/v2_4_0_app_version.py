@@ -5,6 +5,16 @@ v2.4.0 — 应用内升级向导
 - 新建 app_version 表：所有发布的版本 + changelog
 - 预置 v1.0.0 ~ v2.3.0 共 8 个版本
 """
+import sys
+# Windows GBK 兜底（迁移文件本身不 print，但被 runner 调用时 print 可能炸）
+for _name in ('stdout', 'stderr'):
+    _stream = getattr(sys, _name, None)
+    if _stream is not None:
+        try:
+            _stream.reconfigure(encoding='utf-8', errors='replace')
+        except Exception:
+            pass
+
 revision = 'v2.4.0'
 down_revision = 'v2.3.0'
 branch_labels = None

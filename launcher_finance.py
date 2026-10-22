@@ -97,11 +97,34 @@ def main():
     else:
         print(f'[5/6] TLS 未启用（证书不存在，使用 HTTP）— 首次启动正常')
 
-    # 5. 启动 Flask + PyWebView
+    # 5. 启动 Flask + PyWebView（桌面端）
     port = find_free_port()
     run_flask_in_thread(app, port, ssl_context=ssl_context)
     time.sleep(1)  # 等 Flask 就绪
-    print(f'[6/6] Flask 启动: 127.0.0.1:{port}')
+    print(f'[6/6] 桌面 Flask 启动: 127.0.0.1:{port}')
+
+    # === v2.10.0e 新增：Web 模式（财务端默认同时启桌面 + Web）===
+    web_url = None
+    web_app = None
+    if Config.WEB_ENABLED:
+        web_app = create_app('web', config_class=ProductionConfig)
+        web_ssl = ssl_context if Config.WEB_REQUIRE_HTTPS else None
+        try:
+            run_flask_in_thread(
+                web_app,
+                Config.WEB_PORT,
+                host=Config.WEB_HOST,
+                ssl_context=web_ssl,
+            )
+            time.sleep(1)
+            proto = 'https' if web_ssl else 'http'
+            web_url = f'{proto}://0.0.0.0:{Config.WEB_PORT}'
+            print(f'[WEB] Web 模式已启用: {web_url}')
+            print(f'[WEB]   同网段浏览器访问: {proto}://<本机IP>:{Config.WEB_PORT}')
+            print(f'[WEB]   允许登录角色: {Config.WEB_ALLOWED_ROLES}')
+        except Exception as e:
+            print(f'[WEB] Web 模式启动失败: {e}（不影响桌面端使用）')
+            web_app = None
 
     # 6. 桌面环境预检（缺 GTK/WebKit 给清晰错误）
     try:

@@ -16,6 +16,13 @@ import shutil
 import subprocess
 from pathlib import Path
 
+# Windows GBK 兜底
+try:
+    from utils.setup_stdout import setup_safe_stdout
+    setup_safe_stdout()
+except Exception:
+    pass
+
 BASE_DIR = Path(__file__).resolve().parent
 DIST_DIR = BASE_DIR / 'dist'
 BUILD_DIR = BASE_DIR / 'build'

@@ -4,7 +4,7 @@ cd /d "%~dp0"
 
 echo ============================================
 echo  Build Windows .exe (PyInstaller)
-echo  Reimbursement Audit System v2.10.0d
+echo  Reimbursement Audit System v2.11.0
 echo ============================================
 echo.
 echo Current dir: %cd%
