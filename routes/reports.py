@@ -176,6 +176,94 @@ def export_comprehensive_xlsx():
     )
 
 
+# ============= Word 导出（v2.11.0）=============
+
+DOCX_MIME = ('application/vnd.openxmlformats-officedocument.'
+             'wordprocessingml.document')
+
+
+def _send_docx(data, name):
+    return send_file(
+        BytesIO(data),
+        mimetype=DOCX_MIME,
+        as_attachment=True,
+        download_name=f'{name}_{datetime.now().strftime("%Y%m%d")}.docx',
+    )
+
+
+@reports_bp.route('/export/projects.docx')
+@login_required
+def export_projects_docx():
+    """导出项目汇总 Word"""
+    err = _check_finance_only()
+    if err:
+        return err
+    from utils.word_report import export_project_summary_docx
+    sd, ed = _parse_date_range()
+    return _send_docx(export_project_summary_docx(sd, ed), '项目汇总')
+
+
+@reports_bp.route('/export/users.docx')
+@login_required
+def export_users_docx():
+    """导出报销人汇总 Word"""
+    err = _check_finance_only()
+    if err:
+        return err
+    from utils.word_report import export_user_summary_docx
+    sd, ed = _parse_date_range()
+    return _send_docx(export_user_summary_docx(sd, ed), '报销人汇总')
+
+
+@reports_bp.route('/export/monthly.docx')
+@login_required
+def export_monthly_docx():
+    """导出月度汇总 Word"""
+    err = _check_finance_only()
+    if err:
+        return err
+    from utils.word_report import export_monthly_summary_docx
+    year = int(request.args.get('year', datetime.now().year))
+    return send_file(
+        BytesIO(export_monthly_summary_docx(year)),
+        mimetype=DOCX_MIME,
+        as_attachment=True,
+        download_name=f'{year}年月度汇总.docx',
+    )
+
+
+@reports_bp.route('/export/bills.docx')
+@login_required
+def export_bills_docx():
+    """导出单据明细 Word"""
+    err = _check_finance_only()
+    if err:
+        return err
+    from utils.word_report import export_bill_detail_docx
+    sd, ed = _parse_date_range()
+    status = request.args.get('status')
+    project_id = request.args.get('project_id', type=int)
+    user_id = request.args.get('user_id', type=int)
+    return _send_docx(
+        export_bill_detail_docx(start_date=sd, end_date=ed, status=status,
+                                project_id=project_id, user_id=user_id),
+        '单据明细',
+    )
+
+
+@reports_bp.route('/export/comprehensive.docx')
+@login_required
+def export_comprehensive_docx():
+    """导出综合报表 Word（分节多报表）"""
+    err = _check_finance_only()
+    if err:
+        return err
+    from utils.word_report import export_comprehensive_docx as _export
+    sd, ed = _parse_date_range()
+    year = request.args.get('year', type=int) or datetime.now().year
+    return _send_docx(_export(year=year, start_date=sd, end_date=ed), '综合报表')
+
+
 @reports_bp.route('/ping')
 def ping():
     return jsonify({'msg': 'reports blueprint ready'})

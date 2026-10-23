@@ -123,6 +123,13 @@ def _row_keep_next(row):
             p.paragraph_format.keep_together = True
 
 
+def _set_cell_bg(cell, hex_color):
+    """单元格底色（表头/合计行用）"""
+    cell._tc.get_or_add_tcPr().append(
+        parse_xml(rf'<w:shd {nsdecls("w")} w:val="clear" w:fill="{hex_color}"/>')
+    )
+
+
 def _no_spacing(p):
     """去掉段前段后间距，制式表格更紧凑"""
     p.paragraph_format.space_before = Pt(0)
@@ -393,12 +400,16 @@ def _body_para(doc, text, *, size=10.5, color=None, indent=True,
     return p
 
 
-def _new_doc():
-    """制式文档公共初始化：A4 页面 + 宋体 Normal 样式"""
+def _new_doc(landscape: bool = False):
+    """制式文档公共初始化：A4 页面 + 宋体 Normal 样式（可横版）"""
     doc = Document()
     section = doc.sections[0]
-    section.page_width = Cm(21.0)
-    section.page_height = Cm(29.7)
+    if landscape:
+        section.page_width = Cm(29.7)
+        section.page_height = Cm(21.0)
+    else:
+        section.page_width = Cm(21.0)
+        section.page_height = Cm(29.7)
     section.top_margin = Cm(1.8)
     section.bottom_margin = Cm(1.8)
     section.left_margin = Cm(2.0)

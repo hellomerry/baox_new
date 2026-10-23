@@ -3755,6 +3755,9 @@ const App = {
                         <a class="btn btn-primary" href="/api/reports/export/comprehensive.xlsx?year=${year}" target="_blank">
                             📊 导出综合报表
                         </a>
+                        <a class="btn btn-primary" href="/api/reports/export/comprehensive.docx?year=${year}" target="_blank">
+                            📝 综合报表 Word
+                        </a>
                         <a class="btn" href="/api/reports/export/projects.xlsx" target="_blank">
                             📁 项目汇总
                         </a>
@@ -3835,6 +3838,7 @@ const App = {
                         <h3>项目汇总</h3>
                         <a class="btn-sm" href="/api/reports/export/projects.xlsx${queryBase}" target="_blank">📥 Excel</a>
                         <a class="btn-sm" href="/api/reports/export/projects.pdf${queryBase ? queryBase.replace('?', '?').replace(/xlsx/g, 'pdf') : ''}" target="_blank">📄 PDF</a>
+                        <a class="btn-sm" href="/api/reports/export/projects.docx${queryBase}" target="_blank">📝 Word</a>
                     </div>
                     ${(proj.data || []).length ? `
                         <table class="data-table">
@@ -3858,6 +3862,7 @@ const App = {
                         <h3>报销人汇总 TOP 10</h3>
                         <a class="btn-sm" href="/api/reports/export/users.xlsx${queryBase}" target="_blank">📥 Excel</a>
                         <a class="btn-sm" href="/api/reports/export/users.pdf${queryBase ? queryBase.replace(/xlsx/g, 'pdf') : ''}" target="_blank">📄 PDF</a>
+                        <a class="btn-sm" href="/api/reports/export/users.docx${queryBase}" target="_blank">📝 Word</a>
                     </div>
                     ${(user.data || []).slice(0, 10).length ? `
                         <table class="data-table">
@@ -3880,6 +3885,7 @@ const App = {
                     <div class="report-section-header">
                         <h3>${y} 年月度趋势</h3>
                         <a class="btn-sm" href="/api/reports/export/monthly.xlsx?year=${y}" target="_blank">📥 Excel</a>
+                        <a class="btn-sm" href="/api/reports/export/monthly.docx?year=${y}" target="_blank">📝 Word</a>
                     </div>
                     ${(month.data || []).length ? `
                         <table class="data-table">
@@ -3907,6 +3913,9 @@ const App = {
                     </a>
                     <a class="btn" href="/api/reports/export/bills.pdf${billsQuery.replace(/xlsx/g, 'pdf')}" target="_blank">
                         📄 导出 PDF
+                    </a>
+                    <a class="btn" href="/api/reports/export/bills.docx${billsQuery}" target="_blank">
+                        📝 导出 Word
                     </a>
                 </div>
             `;
