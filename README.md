@@ -30,7 +30,8 @@
 - 🛡️ **等保二级**：AES-256 字段加密、Scrypt 派生、登录限速、审计日志
 - 💻 **信创兼容**：Python 3.11 + PyWebView，可在麒麟 V10/UOS/Windows 部署
 - 📦 **PyInstaller 打包**：三个客户端独立打包，无需安装 Python 环境即可运行
-- 🧪 **测试覆盖**：284 个 pytest 用例覆盖认证/单据/附件/包/审计/OCR/代理/通知/决策链/导入导出核心链路
+- 🧪 **测试覆盖**：298 个 pytest 用例覆盖认证/单据/附件/包/审计/OCR/代理/通知/决策链/导入导出核心链路
+- 📝 **三格式导出**：单据/审计报告/统计报表均支持 PDF + Word（制式表格），报表另有 Excel
 
 ---
 
@@ -52,13 +53,13 @@ reimbursement-app/
 ├── models/                    # SQLAlchemy 模型（19 张表 + sys_config / position_level / expense_standard）
 ├── routes/                    # 11 个蓝图：auth, bills, users, projects, attendance, packages, sync, attachments, audit, reports, standards
 ├── services/                  # 业务服务：bill_service, user_service, project_service, attendance_service, redrush_service, natural_person_service, attachment_service, sync_service, report_service
-├── utils/                     # 通用：crypto (AES-256), rbag (包), validators, ratelimit (手写限速), backup, bill_number
+├── utils/                     # 通用：crypto (AES-256), rbag (包), validators, ratelimit (手写限速), backup, bill_number, pdf_export, word_export/word_report (Word 制式导出)
 │
 ├── templates/
 │   └── dashboard.html         # 三客户端共用 SPA 入口（role-based 切换）
 ├── static/                    # app.js (38KB), style.css (9.5KB)
 │
-├── tests/                     # 284 个 pytest 用例
+├── tests/                     # 298 个 pytest 用例
 │   ├── conftest.py            # fixtures：app, live_url, admin_user, project, auditor, reimburser
 │   ├── test_transfer_ocr.py   # 61 个 OCR 识别/摆渡测试
 │   ├── test_bills.py          # 25 个单据流转测试
@@ -74,7 +75,8 @@ reimbursement-app/
 │   ├── test_upgrade.py        # 12 个升级/版本测试
 │   ├── test_decision_chain.py # 12 个决策链测试
 │   ├── test_excel_export.py   # 10 个 Excel 导出测试
-│   ├── test_word_export.py    # 7 个 Word 制式单据导出测试
+│   ├── test_word_export.py    # 11 个 Word 导出测试（制式单据 + 终审审计报告）
+│   ├── test_word_report_export.py  # 10 个报表 Word 导出测试
 │   └── …（packages/attachments/encrypt 等共 11 个）
 │
 ├── uploads/bill_<id>/         # 附件存储（按 bill_id 分目录）
@@ -304,6 +306,7 @@ PYTHONPATH=. python3 -m pytest tests/ --cov=. --cov-report=html
 ## 十一、版本与变更
 
 - **v2.11.0** (2026-10-22) — 合入 v2.10.0e（财务端桌面+Web 双模式、Windows GBK 编码修复）+ 报销单 Word 制式单据导出，284 用例全过
+- **v2.11.1** (2026-10-23) — Word 导出三部曲补全：终审独立审计报告 Word（?format=docx）+ 报表中心 5 类报表 Word（横版制式表格），298 用例全过
 - **v1.0** (T0→T5 + 加固) — 核心链路完成，69 用例通过
 - 决策文档：88+ 条（A-P 系列）保存在 `docs/decisions/`
 
