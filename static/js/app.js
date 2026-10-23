@@ -3505,6 +3505,7 @@ const App = {
                     <input type="date" id="ra-end" class="form-control">
                     <button class="btn btn-primary" id="ra-search">查询</button>
                     <button class="btn" id="ra-export-bill">导出当前单据 PDF</button>
+                    <button class="btn" id="ra-export-bill-docx">导出当前单据 Word</button>
                 </div>
             </div>
             <div id="ra-list"></div>
@@ -3564,6 +3565,7 @@ const App = {
                                         <td>
                                             <button class="btn-sm" onclick="app._view_research_audit_chain(${i.bill_id})">链路</button>
                                             <a class="btn-sm" href="/api/audit/research/export/${i.bill_id}" target="_blank">PDF</a>
+                                            <a class="btn-sm" href="/api/audit/research/export/${i.bill_id}?format=docx" target="_blank">Word</a>
                                         </td>
                                     </tr>
                                 `).join('')}
@@ -3584,6 +3586,14 @@ const App = {
                 return;
             }
             window.open(`/api/audit/research/export/${billId}`, '_blank');
+        };
+        document.getElementById('ra-export-bill-docx').onclick = () => {
+            const billId = document.getElementById('ra-bill-id').value;
+            if (!billId) {
+                alert('请先填写单据 ID');
+                return;
+            }
+            window.open(`/api/audit/research/export/${billId}?format=docx`, '_blank');
         };
 
         await renderList();
@@ -3635,6 +3645,7 @@ const App = {
                     </div>
                     <div class="modal-footer">
                         <a class="btn btn-primary" href="/api/audit/research/export/${billId}" target="_blank">导出 PDF 报告</a>
+                        <a class="btn btn-primary" href="/api/audit/research/export/${billId}?format=docx" target="_blank">导出 Word 报告</a>
                         <button class="btn" onclick="this.closest('.modal-mask').remove()">关闭</button>
                     </div>
                 </div>

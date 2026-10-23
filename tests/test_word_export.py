@@ -4,6 +4,7 @@ Word 制式单据导出测试
 import io
 import zipfile
 from datetime import date, datetime
+from types import SimpleNamespace
 
 import pytest
 import requests
@@ -249,3 +250,124 @@ def test_docx_api_requires_login(live_url):
     """未登录 → 401"""
     r = requests.get(f'{live_url}/api/bills/1/docx')
     assert r.status_code == 401
+
+
+# ============= D3：终审独立审计报告 Word 导出 =============
+
+@pytest.fixture
+def research_bill(app, admin_user, project):
+    """终审审计测试单据（大额）"""
+    with app.app_context():
+        u = SysUser(
+            username='reimb_d3w', real_name='张三', role='reimburser',
+            staff_type='在编', account_status='normal',
+            password_hash=generate_password_hash('Test@001'),
+        )
+        db.session.add(u)
+        db.session.flush()
+        bill = ExpenseBill(
+            bill_no='B-D3W-TEST-001', user_id=u.id, project_id=project['id'],
+            bill_type='personal', travel_start_date=date(2026, 1, 1),
+            travel_end_date=date(2026, 1, 5), destination='北京',
+            total_amount=200000, capital_amount='贰拾万',
+            status='approved', creator_id=u.id,
+        )
+        db.session.add(bill)
+        db.session.commit()
+        return {'id': bill.id, 'bill_no': 'B-D3W-TEST-001'}
+
+
+def test_research_report_docx_unit(tmp_path):
+    """单元：终审审计报告 Word 结构（无需数据库）"""
+    from utils.word_export import export_research_audit_report_docx
+
+    bill = SimpleNamespace(id=42, bill_no='B20260301-P001-00042',
+                           bill_type='personal', total_amount=2350.5)
+    creator = SimpleNamespace(real_name='张三')
+    history = [
+        {'created_at': '2026-03-05T14:30:00', 'auditor_name': '王财务',
+         'auditor_role': 'finance', 'action': 'final_approve',
+         'original_status': 'submitted_finance', 'new_status': 'approved',
+         'ip_address': '192.168.1.10', 'reason': '终审通过，票据齐全'},
+        {'created_at': '2026-03-05T15:00:00', 'auditor_name': '赵第二签',
+         'auditor_role': 'finance', 'action': 'dual_sign_approve',
+         'original_status': 'pending_dual_sign', 'new_status': 'approved',
+         'ip_address': '192.168.1.11', 'reason': '大额复核同意'},
+    ]
+    chain = {'ok': True, 'count': 2, 'missing_actions': [],
+             'last_action': 'dual_sign_approve'}
+
+    out = str(tmp_path / 'report.docx')
+    export_research_audit_report_docx(out, bill, history, chain, creator)
+
+    from docx import Document
+    doc = Document(out)
+    paras = [p.text for p in doc.paragraphs if p.text.strip()]
+    assert paras[0] == '终审独立审计报告'
+    assert any('一、审计链完整性' in t for t in paras)
+    assert any('二、终审独立审计时间线' in t for t in paras)
+    assert any('三、合规声明' in t for t in paras)
+    assert any(t.startswith('报告哈希（SHA-256）：') for t in paras)
+
+    rows = _doc_tables_text(out)
+    # 元信息（逐行独立断言）
+    assert any('单据编号' in r and 'B20260301-P001-00042' in r for r in rows)
+    assert any('￥2,350.50' in r for r in rows)
+    # 链完整性
+    assert any('校验结果' in r and '✓ 完整' in r for r in rows)
+    # 时间线（动作翻译 + 状态变更）
+    assert any('终审通过' in r for r in rows)
+    assert any('双签通过' in r for r in rows)
+    assert any('submitted_finance → approved' in r for r in rows)
+
+
+def test_research_report_docx_empty_history(tmp_path):
+    """无终审记录时正文提示 + 链完整性含备注"""
+    from utils.word_export import export_research_audit_report_docx
+
+    bill = SimpleNamespace(id=1, bill_no='B-EMPTY-00001',
+                           bill_type='personal', total_amount=100)
+    chain = {'ok': True, 'count': 0, 'missing_actions': [],
+             'last_action': None, 'message': '无终审记录（可能金额未达终审阈值）'}
+
+    out = str(tmp_path / 'report_empty.docx')
+    export_research_audit_report_docx(out, bill, [], chain, None)
+
+    from docx import Document
+    doc = Document(out)
+    paras = [p.text for p in doc.paragraphs if p.text.strip()]
+    assert any('无终审记录' in t for t in paras)
+    rows = _doc_tables_text(out)
+    assert any('无终审记录' in r and '备注' in r for r in rows)
+
+
+def test_research_report_docx_api(live_url, app, research_bill, admin_user):
+    """API：?format=docx 输出 Word 报告"""
+    from services.research_audit_service import log_research_audit
+
+    with app.app_context():
+        admin = SysUser.query.filter_by(username='admin').first()
+        log_research_audit(
+            bill_id=research_bill['id'], auditor_id=admin.id,
+            action='final_approve', reason='终审通过',
+        )
+
+    s = login(live_url)
+    r = s.get(f'{live_url}/api/audit/research/export/{research_bill["id"]}?format=docx')
+    assert r.status_code == 200
+    assert 'wordprocessingml' in r.headers['content-type']
+    assert r.content[:2] == b'PK'
+    with zipfile.ZipFile(io.BytesIO(r.content)) as zf:
+        assert 'word/document.xml' in zf.namelist()
+
+    # 默认仍是 PDF（向后兼容）
+    r = s.get(f'{live_url}/api/audit/research/export/{research_bill["id"]}')
+    assert r.headers['content-type'] == 'application/pdf'
+    assert r.content[:4] == b'%PDF'
+
+
+def test_research_report_docx_api_forbidden(live_url, reimburser):
+    """非财务不能导出"""
+    s = login(live_url, 'reimb001', 'Reimb@001!')
+    r = s.get(f'{live_url}/api/audit/research/export/1?format=docx')
+    assert r.status_code == 403

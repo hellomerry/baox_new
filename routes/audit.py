@@ -207,7 +207,10 @@ def research_audit_verify(bill_id):
 @audit_bp.route('/research/export/<int:bill_id>')
 @login_required
 def research_audit_export(bill_id):
-    """导出终审审计报告 PDF
+    """导出终审审计报告（PDF / Word）
+
+    query:
+        format=docx 时输出 Word 制式报告，默认 PDF
 
     输出：
         - 单据基础信息
@@ -220,7 +223,6 @@ def research_audit_export(bill_id):
         return jsonify({'code': 1, 'message': '仅财务可导出'}), 403
 
     from models.models import ExpenseBill, SysUser
-    from utils.pdf_export import export_research_audit_report
     from flask import send_file
 
     bill = ExpenseBill.query.get(bill_id)
@@ -231,11 +233,31 @@ def research_audit_export(bill_id):
     chain = verify_research_audit_chain(bill_id)
     creator = SysUser.query.get(bill.user_id) if bill.user_id else None
 
-    # 临时 PDF
+    fmt = (request.args.get('format') or 'pdf').lower()
     import tempfile
-    tmp = tempfile.NamedTemporaryFile(suffix='.pdf', delete=False)
-    tmp.close()
     try:
+        if fmt == 'docx':
+            from utils.word_export import export_research_audit_report_docx
+            tmp = tempfile.NamedTemporaryFile(suffix='.docx', delete=False)
+            tmp.close()
+            export_research_audit_report_docx(
+                output_path=tmp.name,
+                bill=bill,
+                history=history,
+                chain=chain,
+                creator=creator,
+            )
+            return send_file(
+                tmp.name,
+                mimetype='application/vnd.openxmlformats-officedocument.'
+                         'wordprocessingml.document',
+                as_attachment=True,
+                download_name=f'research_audit_bill_{bill.bill_no}.docx',
+            )
+
+        from utils.pdf_export import export_research_audit_report
+        tmp = tempfile.NamedTemporaryFile(suffix='.pdf', delete=False)
+        tmp.close()
         export_research_audit_report(
             output_path=tmp.name,
             bill=bill,
@@ -251,8 +273,8 @@ def research_audit_export(bill_id):
         )
     except Exception as e:
         from utils.error_handler import log_client_error
-        log_client_error(user.username if user else 'unknown', 'EXPORT_PDF_FAIL', str(e))
-        return jsonify({'code': 1, 'message': f'PDF 生成失败: {e}'}), 500
+        log_client_error(user.username if user else 'unknown', 'EXPORT_FAIL', str(e))
+        return jsonify({'code': 1, 'message': f'导出失败: {e}'}), 500
 
 
 # ============= D3 增强：决策链 + 筛选 =============

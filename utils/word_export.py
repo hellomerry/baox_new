@@ -179,25 +179,7 @@ def generate_bill_docx(bill, items, project, user, auditor, finance_auditor,
     :param dual_signer: SysUser (第二签人，可选，D3 双签单据展示)
     :return: 实际保存路径
     """
-    doc = Document()
-
-    # ---- 页面：A4 纵向 ----
-    section = doc.sections[0]
-    section.page_width = Cm(21.0)
-    section.page_height = Cm(29.7)
-    section.top_margin = Cm(1.8)
-    section.bottom_margin = Cm(1.8)
-    section.left_margin = Cm(2.0)
-    section.right_margin = Cm(2.0)
-
-    # 默认正文字体（style 级，保证空单元格也不落回 Calibri）
-    style = doc.styles['Normal']
-    style.font.name = FONT_BODY
-    style.font.size = Pt(10.5)
-    style.element.rPr.rFonts.set(qn('w:eastAsia'), FONT_BODY)
-    # 默认模板 Normal 带 8pt 段后距 + 1.08 行距，制式表格需取消
-    style.paragraph_format.space_after = Pt(0)
-    style.paragraph_format.line_spacing = 1.0
+    doc = _new_doc()
 
     now = datetime.now()
     days = (bill.travel_end_date - bill.travel_start_date).days + 1 \
@@ -390,6 +372,190 @@ def generate_bill_docx(bill, items, project, user, auditor, finance_auditor,
 
     # 文档属性
     doc.core_properties.title = f'差旅费报销单_{bill.bill_no}'
+    doc.core_properties.author = '报销稽核系统'
+
+    doc.save(output_path)
+    return output_path
+
+
+def _body_para(doc, text, *, size=10.5, color=None, indent=True,
+               align='left', bold=False, italic=False):
+    """正文段落（宋体，中文首行缩进两字符）"""
+    p = doc.add_paragraph()
+    _no_spacing(p)
+    p.paragraph_format.line_spacing = 1.3
+    p.alignment = _ALIGN[align]
+    if indent:
+        p.paragraph_format.first_line_indent = Pt(size * 2)
+    run = p.add_run(text)
+    _set_run_font(run, FONT_BODY, size, bold, color)
+    run.font.italic = italic
+    return p
+
+
+def _new_doc():
+    """制式文档公共初始化：A4 页面 + 宋体 Normal 样式"""
+    doc = Document()
+    section = doc.sections[0]
+    section.page_width = Cm(21.0)
+    section.page_height = Cm(29.7)
+    section.top_margin = Cm(1.8)
+    section.bottom_margin = Cm(1.8)
+    section.left_margin = Cm(2.0)
+    section.right_margin = Cm(2.0)
+
+    style = doc.styles['Normal']
+    style.font.name = FONT_BODY
+    style.font.size = Pt(10.5)
+    style.element.rPr.rFonts.set(qn('w:eastAsia'), FONT_BODY)
+    # 默认模板 Normal 带 8pt 段后距 + 1.08 行距，制式表格需取消
+    style.paragraph_format.space_after = Pt(0)
+    style.paragraph_format.line_spacing = 1.0
+    return doc
+
+
+# ============= D3 决策：终审独立审计报告 Word 版 =============
+
+def export_research_audit_report_docx(
+    output_path: str,
+    bill,
+    history: list,
+    chain: dict,
+    creator,
+) -> str:
+    """终审独立审计报告（D3）Word 版
+
+    内容与 utils/pdf_export.export_research_audit_report 一致：
+    报告元信息 + 审计链完整性 + 终审时间线 + 合规声明 + 报告哈希。
+
+    Args:
+        output_path: 输出 .docx 路径
+        bill: ExpenseBill 对象
+        history: list_research_audits() 返回的审计记录
+        chain: verify_research_audit_chain() 返回的校验结果
+        creator: 单据创建人 SysUser
+    """
+    doc = _new_doc()
+    now = datetime.now()
+
+    # ---- 标题 ----
+    _title(doc, '终审独立审计报告')
+
+    # ---- 报告元信息 ----
+    t = doc.add_table(rows=6, cols=2)
+    _set_table_borders(t)
+    _set_col_widths(t, [3.5, 13.5])
+    meta = [
+        ('报告编号', f'RA-{bill.id:06d}-{now.strftime("%Y%m%d%H%M%S")}'),
+        ('单据编号', bill.bill_no or '—'),
+        ('单据类型', '项目总账' if bill.bill_type == 'project_total' else '个人报销'),
+        ('单据金额', f'￥{float(bill.total_amount or 0):,.2f}'),
+        ('报销人', creator.real_name if creator else '—'),
+        ('生成时间', now.strftime('%Y-%m-%d %H:%M:%S')),
+    ]
+    for i, (label, value) in enumerate(meta):
+        r = t.rows[i]
+        _set_row_height(r, 0.7)
+        _row_cant_split(r)
+        _cell_text(r.cells[0], label, bold=True)
+        _cell_text(r.cells[1], value, align='left')
+
+    # ---- 一、审计链完整性 ----
+    _section_heading(doc, '一、审计链完整性')
+    chain_rows = [
+        ('校验结果', '✓ 完整' if chain.get('ok') else '✗ 异常'),
+        ('审计记录数', str(chain.get('count', 0))),
+        ('最后动作', chain.get('last_action') or '—'),
+    ]
+    if chain.get('missing_actions'):
+        chain_rows.append(('缺失动作', '、'.join(chain['missing_actions'])))
+    if chain.get('message'):
+        chain_rows.append(('备注', chain['message']))
+
+    t = doc.add_table(rows=len(chain_rows), cols=2)
+    _set_table_borders(t)
+    _set_col_widths(t, [3.5, 13.5])
+    result_color = '27ae60' if chain.get('ok') else 'e74c3c'
+    for i, (label, value) in enumerate(chain_rows):
+        r = t.rows[i]
+        _set_row_height(r, 0.7)
+        _row_cant_split(r)
+        _cell_text(r.cells[0], label, bold=True)
+        _cell_text(r.cells[1], value, align='left',
+                   bold=(i == 0), color=(result_color if i == 0 else None))
+
+    # ---- 二、终审独立审计时间线 ----
+    _section_heading(doc, '二、终审独立审计时间线')
+    if not history:
+        _body_para(doc, '无终审记录（金额未达终审阈值）', italic=True, color='888888')
+    else:
+        action_map = {
+            'final_approve': '终审通过',
+            'final_reject': '终审驳回',
+            'override': '强制修改',
+            'archive': '归档',
+            'dual_sign_approve': '双签通过',
+            'dual_sign_reject': '双签拒绝',
+        }
+        tl_w = [1.0, 3.3, 3.3, 2.2, 3.0, 2.1, 2.1]
+        t = doc.add_table(rows=1 + len(history), cols=7)
+        _set_table_borders(t)
+        _set_col_widths(t, tl_w)
+
+        head = t.rows[0]
+        _set_row_height(head, 0.6)
+        _row_cant_split(head)
+        _repeat_header(head)
+        _row_keep_next(head)
+        for cell, text in zip(head.cells,
+                              ['#', '时间', '操作人', '动作', '状态变更', 'IP', '原因']):
+            _cell_text(cell, text, bold=True, size=9)
+
+        for i, h in enumerate(history, start=1):
+            r = t.rows[i]
+            _set_row_height(r, 0.6)
+            _row_cant_split(r)
+            cells = [
+                i,
+                (h.get('created_at') or '-')[:19],
+                f"{h.get('auditor_name', '-')}（{h.get('auditor_role', '-')}）",
+                action_map.get(h['action'], h['action']),
+                f"{h.get('original_status') or '—'} → {h.get('new_status') or '—'}",
+                h.get('ip_address') or '—',
+                (h.get('reason') or '—')[:30],
+            ]
+            for cell, text in zip(r.cells, cells):
+                _cell_text(cell, text, size=9)
+
+    # ---- 三、合规声明 ----
+    _section_heading(doc, '三、合规声明')
+    _body_para(doc, '本报告由报销稽核系统（D3 决策）自动生成，记录了上述单据的完整终审独立审计过程。')
+    _body_para(doc, '审计链的每一步均不可篡改，所有操作记录均带操作人、IP、客户端 ID 三元组，'
+                   '可用于内部审计与外部合规检查。')
+    _body_para(doc, '本报告 SHA-256 哈希可用于离线校验。')
+
+    # ---- 报告哈希 ----
+    import hashlib
+    report_content = (
+        f'RA-{bill.id}-{bill.bill_no}-{len(history)}-'
+        f'{chain.get("ok")}-{now.isoformat()}'
+    )
+    report_hash = hashlib.sha256(report_content.encode()).hexdigest()
+    _spacer(doc, 2)
+    _body_para(doc, f'报告哈希（SHA-256）：{report_hash}', indent=False,
+               size=8, color='888888')
+
+    # ---- 页脚 ----
+    _spacer(doc, 4)
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    _no_spacing(p)
+    run = p.add_run(
+        f'报销稽核系统 · 终审独立审计报告 · 生成于 {now.strftime("%Y-%m-%d %H:%M:%S")}'
+    )
+    _set_run_font(run, size=8, color='999999')
+
+    doc.core_properties.title = f'终审独立审计报告_{bill.bill_no}'
     doc.core_properties.author = '报销稽核系统'
 
     doc.save(output_path)
