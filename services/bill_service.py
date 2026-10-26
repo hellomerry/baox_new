@@ -282,7 +282,14 @@ class BillService:
         db.session.add(log)
         db.session.commit()
 
-        return True, '创建成功', bill
+        # 13. 预检预警（考勤联动 + 调令校验，不阻断）
+        from services.precheck_service import run_prechecks, summarize
+        warning_summary = summarize(run_prechecks(bill))
+
+        msg = '创建成功'
+        if warning_summary:
+            msg = f'创建成功（预检预警：{warning_summary}）'
+        return True, msg, bill
 
     @staticmethod
     def submit_bill(operator_id: int, bill_id: int) -> tuple:
@@ -374,6 +381,19 @@ class BillService:
             bill.status = 'archived'
             bill.archived_at = datetime.now()
 
+        # 预检预警（考勤联动 + 调令校验）：通过时仍有预警 → 落审计日志供追溯
+        from services.precheck_service import run_prechecks, summarize
+        warning_summary = summarize(run_prechecks(bill))
+        if warning_summary:
+            db.session.add(AuditLog(
+                actor_id=operator_id,
+                actor_role=operator.role,
+                action='PRECHECK_WARNING',
+                target_type='bill',
+                target_id=str(bill.id),
+                detail=warning_summary,
+            ))
+
         db.session.commit()
 
         # 通知
@@ -384,7 +404,10 @@ class BillService:
         except Exception:
             db.session.rollback()
 
-        return True, f'审核成功，新状态：{bill.status}'
+        msg = f'审核成功，新状态：{bill.status}'
+        if warning_summary:
+            msg += f'（预检预警：{warning_summary}）'
+        return True, msg
 
     @staticmethod
     def audit_by_finance(operator_id: int, bill_id: int, decision: str, comment: str = '', dual_signer_id: int = None) -> tuple:

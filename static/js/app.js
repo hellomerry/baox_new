@@ -330,6 +330,7 @@ const App = {
         let actionHtml = '';
         if (role === 'auditor' && b.status === 'submitted_auditor' && b.auditor_id === this.currentUser.user_id) {
             actionHtml = `
+                <div id="precheck-box"></div>
                 <textarea id="audit-comment" placeholder="审核意见" class="form-control"></textarea>
                 <div class="action-buttons">
                     <button class="btn btn-primary" onclick="App.doAudit(${billId}, 'approve')">通过</button>
@@ -338,6 +339,7 @@ const App = {
             `;
         } else if (role === 'finance' && (b.status === 'auditor_ok' || b.status === 'submitted_finance')) {
             actionHtml = `
+                <div id="precheck-box"></div>
                 <textarea id="audit-comment" placeholder="终审意见" class="form-control"></textarea>
                 <div class="action-buttons">
                     <button class="btn btn-primary" onclick="App.doFinanceAudit(${billId}, 'approve')">终审通过</button>
@@ -423,6 +425,35 @@ const App = {
                 <button class="btn" onclick="App.goBack()">返回</button>
             </div>
         `;
+
+        // 审核界面存在时异步加载稽核预检预警（考勤联动 + 调令校验）
+        if (document.getElementById('precheck-box')) {
+            this._loadPrecheck(billId);
+        }
+    },
+
+    // 稽核预检预警加载（考勤联动 + 调令校验）
+    async _loadPrecheck(billId) {
+        const box = document.getElementById('precheck-box');
+        if (!box) return;
+        try {
+            const r = await this.api.get(`/api/bills/${billId}/precheck`);
+            if (r.code !== 0) return;
+            const warns = (r.data || []).filter(p => p.status === 'warning');
+            if (!warns.length) return;
+            const labels = { attendance: '📅 考勤联动', transfer: '📄 调令校验' };
+            box.innerHTML = `
+                <div class="audit-chain-status error" style="margin-bottom: 8px;">
+                    <strong>⚠️ 稽核预检预警</strong>
+                    ${warns.map(w => `
+                        <div style="margin-top: 4px;">
+                            <strong>${labels[w.rule] || w.rule}</strong>：${this.escape(w.message)}
+                        </div>
+                    `).join('')}
+                    <div style="color: #999; font-size: 12px; margin-top: 4px;">预警不阻断审批，请核实后决策；通过后预警将写入审计日志</div>
+                </div>
+            `;
+        } catch (e) { /* 预检失败不阻塞审核界面 */ }
     },
 
     // D3 override 强制修改

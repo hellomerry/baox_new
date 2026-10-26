@@ -458,6 +458,18 @@ def export_bill_docx(bill_id):
     )
 
 
+@bills_bp.route('/<int:bill_id>/precheck')
+@login_required
+def bill_precheck(bill_id):
+    """稽核预检（考勤联动 + 调令校验）查询，供审核界面展示预警"""
+    bill = ExpenseBill.query.get(bill_id)
+    if not bill:
+        return jsonify({'code': 1, 'message': '报销单不存在'}), 404
+
+    from services.precheck_service import run_prechecks
+    return jsonify({'code': 0, 'data': run_prechecks(bill)})
+
+
 @bills_bp.route('/ping')
 def ping():
     return jsonify({'msg': 'bills blueprint ready'})
