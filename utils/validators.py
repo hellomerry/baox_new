@@ -180,13 +180,30 @@ def check_duplicate_bill(user_id: int, project_id: int, start_date: date, end_da
     return 'ok', '', []
 
 
-# ============= 高标准（K2 决策：position_id + staff_type） =============
+# ============= 高标准（K2 决策：position_id + staff_type；v2.11.2 + region） =============
 
-def get_max_standard(user_id: int, project_ids: list) -> dict:
+def _pick_standard(standards, region_tier) -> dict:
+    """按费用类型选择标准：地区特定（region_tier 匹配）优先，该类型无地区行则回退通用（NULL）"""
+    max_specific = {}
+    max_generic = {}
+    for s in standards:
+        bucket = max_specific if s.region_tier == region_tier else max_generic
+        if s.subsidy_type not in bucket or s.amount > bucket[s.subsidy_type].amount:
+            bucket[s.subsidy_type] = s
+    # 地区特定优先；通用仅补缺的类型
+    return {**max_generic, **max_specific}
+
+
+def get_max_standard(user_id: int, project_ids: list, destination: str = None) -> dict:
     """
     J 决策：取所有项目标准中最高的
     K2 决策：双重条件 position_id + staff_type
+    v2.11.2（主线④）：destination 非空时按地区档交叉——
+        地区特定标准按费用类型优先，该类型无地区行回退通用标准
     """
+    from utils.region import resolve_region_tier
+    region_tier = resolve_region_tier(destination) if destination else None
+
     user_pos = UserPosition.query.filter_by(
         user_id=user_id
     ).order_by(UserPosition.effective_date.desc()).first()
@@ -203,28 +220,30 @@ def get_max_standard(user_id: int, project_ids: list) -> dict:
     max_by_type = {}
 
     for project_id in project_ids:
-        # J3：先查项目特定标准
+        # J3：先查项目特定标准；v2.11.2：同时取地区特定 + 通用两类
+        base_filters = [
+            ExpenseStandard.position_id == position_id,
+            ExpenseStandard.staff_type == staff_type,
+            ExpenseStandard.valid_start <= today,
+            or_(ExpenseStandard.valid_end.is_(None), ExpenseStandard.valid_end >= today),
+        ]
+        region_filter = (
+            or_(ExpenseStandard.region_tier == region_tier,
+                ExpenseStandard.region_tier.is_(None))
+            if region_tier else ExpenseStandard.region_tier.is_(None)
+        )
+
         project_specific = ExpenseStandard.query.filter(
-            ExpenseStandard.position_id == position_id,
-            ExpenseStandard.staff_type == staff_type,
-            ExpenseStandard.project_id == project_id,
-            ExpenseStandard.valid_start <= today,
-            or_(ExpenseStandard.valid_end.is_(None), ExpenseStandard.valid_end >= today)
+            ExpenseStandard.project_id == project_id, region_filter, *base_filters,
         ).all()
 
-        # 再查全局标准
         global_standards = ExpenseStandard.query.filter(
-            ExpenseStandard.position_id == position_id,
-            ExpenseStandard.staff_type == staff_type,
-            ExpenseStandard.project_id.is_(None),
-            ExpenseStandard.valid_start <= today,
-            or_(ExpenseStandard.valid_end.is_(None), ExpenseStandard.valid_end >= today)
+            ExpenseStandard.project_id.is_(None), region_filter, *base_filters,
         ).all()
 
-        standards = project_specific + global_standards
-
-        for s in standards:
-            if s.subsidy_type not in max_by_type or s.amount > max_by_type[s.subsidy_type].amount:
-                max_by_type[s.subsidy_type] = s
+        picked = _pick_standard(project_specific + global_standards, region_tier)
+        for subsidy_type, s in picked.items():
+            if subsidy_type not in max_by_type or s.amount > max_by_type[subsidy_type].amount:
+                max_by_type[subsidy_type] = s
 
     return max_by_type

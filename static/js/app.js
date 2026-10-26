@@ -3697,7 +3697,7 @@ const App = {
                 <h3>内置报销标准（${items.length} 条）</h3>
                 ${items.length ? `
                     <table class="data-table">
-                        <thead><tr><th>岗位</th><th>人员类型</th><th>补助类型</th><th>金额</th><th>项目特定</th><th>有效期</th></tr></thead>
+                        <thead><tr><th>岗位</th><th>人员类型</th><th>补助类型</th><th>金额</th><th>地区档</th><th>项目特定</th><th>有效期</th></tr></thead>
                         <tbody>
                             ${items.map(s => `
                                 <tr>
@@ -3705,6 +3705,7 @@ const App = {
                                     <td>${this.escape(s.staff_type)}</td>
                                     <td>${this.escape(s.subsidy_type)}</td>
                                     <td>¥${this.formatMoney(s.amount)}</td>
+                                    <td>${this.escape(s.region_tier_name || '通用（不限地区）')}</td>
                                     <td>${s.project_id ? '#' + s.project_id : '全局'}</td>
                                     <td>${this.formatDate(s.valid_start)} ~ ${this.formatDate(s.valid_end) || '至今'}</td>
                                 </tr>
@@ -3750,6 +3751,15 @@ const App = {
                         <label>金额（元/天）</label>
                         <input type="number" id="std-amount" min="0" step="0.01" required>
                     </div>
+                    <div class="form-group">
+                        <label>地区档（报销时按出差目的地匹配，通用档=不限地区）</label>
+                        <select id="std-region">
+                            <option value="">通用（不限地区）</option>
+                            <option value="tier1">一类地区（直辖市）</option>
+                            <option value="tier2">二类地区（省会/计划单列市）</option>
+                            <option value="tier3">三类地区（其他）</option>
+                        </select>
+                    </div>
                     <div class="action-buttons">
                         <button type="submit" class="btn btn-primary">保存</button>
                         <button type="button" class="btn" onclick="App.navigate('standards')">取消</button>
@@ -3766,6 +3776,7 @@ const App = {
             staff_type: document.getElementById('std-staff').value,
             subsidy_type: document.getElementById('std-type').value,
             amount: parseFloat(document.getElementById('std-amount').value),
+            region_tier: document.getElementById('std-region').value || null,
         };
         const r = await this.api.post('/api/standards/create', data);
         alert(r.message);

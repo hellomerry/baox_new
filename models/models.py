@@ -247,6 +247,9 @@ class ExpenseStandard(db.Model):
     project_id = Column(Integer, ForeignKey('expense_project.id'), nullable=True)  # null=全局
     valid_start = Column(Date, nullable=False)
     valid_end = Column(Date, nullable=True)
+    # v2.11.2 地区档（主线④：职务等级×人员类型×地区 三维交叉）
+    # null=通用（不限地区）；tier1=直辖市/一线，tier2=省会/计划单列市，tier3=其他
+    region_tier = Column(String(20), nullable=True, index=True)
     remark = Column(String(200), nullable=True)
     created_at = Column(DateTime, default=datetime.now)
     created_by = Column(Integer, ForeignKey('sys_user.id'), nullable=True)

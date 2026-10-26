@@ -19,12 +19,15 @@ def list_standards():
     """列出所有标准"""
     position_id = request.args.get('position_id', type=int)
     staff_type = request.args.get('staff_type', '')
+    region_tier = request.args.get('region_tier', '')
 
     q = ExpenseStandard.query
     if position_id:
         q = q.filter(ExpenseStandard.position_id == position_id)
     if staff_type:
         q = q.filter(ExpenseStandard.staff_type == staff_type)
+    if region_tier:
+        q = q.filter(ExpenseStandard.region_tier == region_tier)
 
     items = q.order_by(
         ExpenseStandard.position_id, ExpenseStandard.subsidy_type
@@ -34,6 +37,7 @@ def list_standards():
     pos_ids = set(s.position_id for s in items)
     pos_map = {p.id: p for p in PositionLevel.query.filter(PositionLevel.id.in_(pos_ids)).all()} if pos_ids else {}
 
+    from utils.region import tier_display
     return jsonify({
         'code': 0,
         'data': [{
@@ -44,6 +48,8 @@ def list_standards():
             'subsidy_type': s.subsidy_type,
             'amount': float(s.amount) if s.amount else 0,
             'project_id': s.project_id,
+            'region_tier': s.region_tier,
+            'region_tier_name': tier_display(s.region_tier),
             'valid_start': s.valid_start.isoformat() if s.valid_start else None,
             'valid_end': s.valid_end.isoformat() if s.valid_end else None,
         } for s in items]
@@ -73,6 +79,7 @@ def create_standard():
         project_id=data.get('project_id'),
         valid_start=date.fromisoformat(data['valid_start']) if data.get('valid_start') else date.today(),
         valid_end=date.fromisoformat(data['valid_end']) if data.get('valid_end') else None,
+        region_tier=data.get('region_tier') or None,
     )
     db.session.add(s)
     db.session.commit()
@@ -98,6 +105,8 @@ def update_standard(std_id):
         s.subsidy_type = data['subsidy_type']
     if 'valid_end' in data:
         s.valid_end = date.fromisoformat(data['valid_end']) if data['valid_end'] else None
+    if 'region_tier' in data:
+        s.region_tier = data['region_tier'] or None
     db.session.commit()
     return jsonify({'code': 0, 'message': '更新成功'})
 

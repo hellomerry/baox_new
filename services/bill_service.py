@@ -30,9 +30,11 @@ def get_config_int(key: str, default: int) -> int:
     return default
 
 
-def calc_subsidy_by_high_standard(user_id: int, project_id: int, start_date: date, end_date: date) -> Decimal:
+def calc_subsidy_by_high_standard(user_id: int, project_id: int, start_date: date, end_date: date,
+                                  destination: str = None) -> Decimal:
     """
     J 决策：按高标准计算补助
+    v2.11.2：destination 参与地区档交叉（地区特定标准按费用类型优先）
     """
     overlapping_projects = db.session.query(ExpenseBill.project_id).filter(
         ExpenseBill.user_id == user_id,
@@ -43,7 +45,7 @@ def calc_subsidy_by_high_standard(user_id: int, project_id: int, start_date: dat
 
     project_ids = [project_id] + [p[0] for p in overlapping_projects if p[0] != project_id]
 
-    max_standards = get_max_standard(user_id, project_ids)
+    max_standards = get_max_standard(user_id, project_ids, destination)
 
     if not max_standards:
         return Decimal('0')
@@ -188,10 +190,11 @@ class BillService:
             if status == 'block':
                 return False, msg, None
 
-        # 6. 计算总金额（K 决策：subsidy_fee 自动按高标准）
+        # 6. 计算总金额（K 决策：subsidy_fee 自动按高标准；v2.11.2：含地区档交叉）
         subsidy_fee = Decimal(str(bill_data.get('subsidy_fee', 0)))
+        destination = bill_data.get('destination', '')
         if user_id is not None and subsidy_fee == 0:
-            subsidy_fee = calc_subsidy_by_high_standard(user_id, project_id, start, end)
+            subsidy_fee = calc_subsidy_by_high_standard(user_id, project_id, start, end, destination)
 
         total = (
             Decimal(str(bill_data.get('transport_fee', 0))) +
@@ -212,22 +215,27 @@ class BillService:
         # 8. 生成单号
         bill_no = generate_bill_no(project.project_code)
 
-        # 9. K4 决策：记录标准来源
+        # 9. K4 决策：记录标准来源（v2.11.2：含地区档）
         applied_standard_source_json = None
         if user_id is not None and subsidy_fee > 0:
             user_pos = UserPosition.query.filter_by(user_id=user_id).order_by(UserPosition.effective_date.desc()).first()
             if user_pos:
-                max_standards = get_max_standard(user_id, [project_id])
+                max_standards = get_max_standard(user_id, [project_id], destination)
                 if max_standards:
+                    from utils.region import resolve_region_tier
+                    reimb_user = SysUser.query.get(user_id)
                     applied_standard_source_json = json.dumps({
                         'position_id': user_pos.position_id,
-                        'staff_type': operator.staff_type if operator else '在编',
+                        'staff_type': reimb_user.staff_type if reimb_user else '在编',
                         'items': [{
                             'subsidy_type': s.subsidy_type,
                             'amount': float(s.amount),
                             'source_project_id': s.project_id,
+                            'region_tier': s.region_tier,
                         } for s in max_standards.values()],
                         'apply_days': (end - start).days + 1,
+                        'destination': destination or None,
+                        'region_tier': resolve_region_tier(destination) if destination else None,
                     }, ensure_ascii=False)
 
         # 10. 创建主单

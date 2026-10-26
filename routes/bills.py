@@ -354,9 +354,10 @@ def check_duplicate():
 @bills_bp.route('/standard-preview', methods=['POST'])
 @login_required
 def standard_preview():
-    """预览高标准计算结果"""
+    """预览高标准计算结果（v2.11.2：含地区档交叉）"""
     from utils.validators import get_max_standard
     from services.bill_service import calc_subsidy_by_high_standard
+    from utils.region import resolve_region_tier, tier_display
     from decimal import Decimal
 
     data = request.get_json() or {}
@@ -366,19 +367,25 @@ def standard_preview():
     project_id = data['project_id']
     start = datetime.strptime(data['travel_start_date'], '%Y-%m-%d').date()
     end = datetime.strptime(data['travel_end_date'], '%Y-%m-%d').date()
+    destination = (data.get('destination') or '').strip() or None
 
-    subsidy = calc_subsidy_by_high_standard(user_id, project_id, start, end)
-    standards = get_max_standard(user_id, [project_id])
+    subsidy = calc_subsidy_by_high_standard(user_id, project_id, start, end, destination)
+    standards = get_max_standard(user_id, [project_id], destination)
+    tier = resolve_region_tier(destination) if destination else None
 
     return jsonify({
         'code': 0,
         'data': {
             'subsidy_fee': float(subsidy),
             'days': (end - start).days + 1,
+            'destination': destination,
+            'region_tier': tier,
+            'region_tier_name': tier_display(tier) if tier else None,
             'standards': [{
                 'subsidy_type': s.subsidy_type,
                 'amount': float(s.amount),
                 'source_project_id': s.project_id,
+                'region_tier': s.region_tier,
             } for s in standards.values()],
         }
     })
