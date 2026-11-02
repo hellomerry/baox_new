@@ -15,7 +15,7 @@ pywebview>=6.2,<7.0
 pyinstaller>=6.3,<7.0
 
 # 加密
-cryptography>=42.0,<45.0
+cryptography>=50.0.2,<51.0
 
 # 数据库
 SQLAlchemy>=2.0,<3.0
